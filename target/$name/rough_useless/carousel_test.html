@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="output.css">
+    <title>Document</title>
+
+</head>
+
+<body class="bg-gray-200">
+   
+    <div class="relative w-full overflow-hidden slider-container">
+        <button class="absolute left-0 px-2 py-1 text-white transform -translate-y-1/2 bg-blue-500 rounded cursor-pointer prev-btn top-1/2" id="prevBtn">&lt;</button>
+        <button class="absolute right-0 px-2 py-1 text-white transform -translate-y-1/2 bg-blue-500 rounded cursor-pointer next-btn top-1/2" id="nextBtn">&gt;</button>
+        <div class="flex transition-transform duration-300 ease-in-out slider" id="slider">
+          <!-- Generating 14 slides -->
+          <span class="flex-shrink-0 w-20 h-20 p-2 m-1 bg-gray-300 border border-gray-400 rounded-lg">1</span>
+          <span class="flex-shrink-0 w-20 h-20 p-2 m-1 bg-gray-300 border border-gray-400 rounded-lg">2</span>
+          <span class="flex-shrink-0 w-20 h-20 p-2 m-1 bg-gray-300 border border-gray-400 rounded-lg">3</span>
+          <span class="flex-shrink-0 w-20 h-20 p-2 m-1 bg-gray-300 border border-gray-400 rounded-lg">4</span>
+          <span class="flex-shrink-0 w-20 h-20 p-2 m-1 bg-gray-300 border border-gray-400 rounded-lg">5</span>
+          <span class="flex-shrink-0 w-20 h-20 p-2 m-1 bg-gray-300 border border-gray-400 rounded-lg">6</span>
+          <span class="flex-shrink-0 w-20 h-20 p-2 m-1 bg-gray-300 border border-gray-400 rounded-lg">7</span>
+          <span class="flex-shrink-0 w-20 h-20 p-2 m-1 bg-gray-300 border border-gray-400 rounded-lg">8</span>
+          <span class="flex-shrink-0 w-20 h-20 p-2 m-1 bg-gray-300 border border-gray-400 rounded-lg">9</span>
+          <span class="flex-shrink-0 w-20 h-20 p-2 m-1 bg-gray-300 border border-gray-400 rounded-lg">10</span>
+          <span class="flex-shrink-0 w-20 h-20 p-2 m-1 bg-gray-300 border border-gray-400 rounded-lg">11</span>
+          <span class="flex-shrink-0 w-20 h-20 p-2 m-1 bg-gray-300 border border-gray-400 rounded-lg">12</span>
+          <span class="flex-shrink-0 w-20 h-20 p-2 m-1 bg-gray-300 border border-gray-400 rounded-lg">13</span>
+          <span class="flex-shrink-0 w-20 h-20 p-2 m-1 bg-gray-300 border border-gray-400 rounded-lg">14</span>
+        </div>
+      </div>
+    <script>
+        const prevButton = document.getElementById('prevBtn');
+        const nextButton = document.getElementById('nextBtn');
+        const slider = document.getElementById('slider');
+        const items = Array.from(slider.children);
+        const itemWidth = items[0].clientWidth;
+        const itemsPerPage = 5;
+
+        let currentIndex = 0;
+
+        nextButton.addEventListener('click', () => {
+            currentIndex = (currentIndex + itemsPerPage) % items.length;
+            updateSlider();
+        });
+
+        prevButton.addEventListener('click', () => {
+            currentIndex = (currentIndex - itemsPerPage + items.length) % items.length;
+            updateSlider();
+        });
+
+        function updateSlider() {
+            items.forEach((item, index) => {
+                const offsetIndex = (index + currentIndex) % items.length;
+                const displayIndex = offsetIndex < items.length ? offsetIndex : offsetIndex - items.length;
+                item.textContent = displayIndex + 1;
+            });
+        }
+
+        updateSlider();
+    </script>
+</body>
+
+</html>

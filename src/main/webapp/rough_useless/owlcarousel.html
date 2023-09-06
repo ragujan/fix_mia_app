@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="owl_carousel/owlcarousel/assets/owl.carousel.min.css">
+    <link rel="stylesheet" href="owl_carousel/owlcarousel/assets/owl.theme.default.min.css">
+    <title>Document</title>
+
+    <script src="owl_carousel/vendors/jquery.min.js"></script>
+    <script src="owl_carousel/owlcarousel/owl.carousel.js"></script>
+    <link rel="stylesheet" href="output.css">
+    <style>
+        .owl-carousel .nav-btn{
+  height: 47px;
+  position: absolute;
+  width: 26px;
+  cursor: pointer;
+  top: 100px !important;
+}
+
+.owl-carousel .owl-prev.disabled,
+.owl-carousel .owl-next.disabled{
+pointer-events: none;
+opacity: 0.2;
+}
+
+.owl-carousel .prev-slide{
+  background: url(nav-icon.png) no-repeat scroll 0 0;
+  left: -33px;
+}
+.owl-carousel .next-slide{
+  background: url(nav-icon.png) no-repeat scroll -24px 0px;
+  right: -33px;
+}
+.owl-carousel .prev-slide:hover{
+ background-position: 0px -53px;
+}
+.owl-carousel .next-slide:hover{
+background-position: -24px -53px;
+}   
+    </style>
+</head>
+
+<body>
+    <section class="bg-red-200" id="categoryCarousel">
+        <div class="row">
+            <div class="large-12 columns">
+                <div class="bg-green-600 owl-carousel owl-theme">
+                    <div class="bg-yellow-400 item">
+                        <h4>1</h4>
+                    </div>
+                    <div class="item">
+                        <h4>2</h4>
+                    </div>
+                    <div class="item">
+                        <h4>3</h4>
+                    </div>
+                    <div class="item">
+                        <h4>4</h4>
+                    </div>
+                    <div class="item">
+                        <h4>5</h4>
+                    </div>
+                    <div class="item">
+                        <h4>6</h4>
+                    </div>
+                    <div class="item">
+                        <h4>7</h4>
+                    </div>
+                    <div class="item">
+                        <h4>8</h4>
+                    </div>
+                    <div class="item">
+                        <h4>9</h4>
+                    </div>
+                    <div class="item">
+                        <h4>10</h4>
+                    </div>
+                    <div class="item">
+                        <h4>11</h4>
+                    </div>
+                    <div class="item">
+                        <h4>12</h4>
+                    </div>
+
+                </div>
+
+                <script>
+                    $(document).ready(function () {
+                        $('.owl-carousel').owlCarousel({
+                            loop: true,
+                            margin: 10,
+                            responsiveClass: true,
+                            nav: true,
+                            dots: false,
+                            navText: ["<div class='nav-btn prev-slide'></div>", "<div class='nav-btn next-slide'></div>"],
+
+                            responsive: {
+                                0: {
+                                    items: 1,
+
+                                },
+                                600: {
+                                    items: 3,
+
+                                },
+                                1000: {
+                                    items: 7,
+
+
+                                    margin: 20
+                                }
+                            }
+                        })
+                    })
+                </script>
+            </div>
+        </div>
+    </section>
+
+</body>
+
+</html>

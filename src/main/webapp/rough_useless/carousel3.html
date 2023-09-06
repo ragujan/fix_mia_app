@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="output.css">
+    <title>Document</title>
+</head>
+
+<body>
+    <section>
+        <div class="flex">
+            <div class="flex items-center w-2/12">
+                <div class="w-full text-right">
+                    <button id="prev-btn" class="p-3 mr-5 bg-white border border-gray-600 rounded-full shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
+                        </svg>
+
+                    </button>
+                </div>
+            </div>
+            <div id="multipleItemCarouselContainer" class="w-10/12 overflow-hidden ">
+                <ul  class="flex flex-row w-full transition-[margin] duration-700">
+                    <li class="p-5 ">
+                        <div class="h-full p-5 border rounded-lg border-lg">
+                            <img class="object-cover w-full rounded-md h-50" src="./image_resources/carpentors.jpg"
+                                alt="">
+                            <h2 class="mt-2 text-2xl font-bold text-gray-700">Some header</h2>
+                        </div>
+                    </li>
+                    <li class="p-5 ">
+                        <div class="h-full p-5 border rounded-lg border-lg">
+                            <img class="object-cover w-full rounded-md h-50" src="./image_resources/computer_worker.png"
+                                alt="">
+                            <h2 class="mt-2 text-2xl font-bold text-gray-700">Some header</h2>
+                        </div>
+                    </li>
+                    <li class="p-5 ">
+                        <div class="h-full p-5 border rounded-lg border-lg">
+                            <img class="object-cover w-full rounded-md h-50" src="./image_resources/constructors.jpg"
+                                alt="">
+                            <h2 class="mt-2 text-2xl font-bold text-gray-700">Some header</h2>
+                        </div>
+                    </li>
+                    <li class="p-5 ">
+                        <div class="h-full p-5 border rounded-lg border-lg">
+                            <img class="object-cover w-full rounded-md h-50" src="./image_resources/electrician.jpeg"
+                                alt="">
+                            <h2 class="mt-2 text-2xl font-bold text-gray-700">Some header</h2>
+                        </div>
+                    </li>
+                    <li class="p-5 ">
+                        <div class="h-full p-5 border rounded-lg border-lg">
+                            <img class="object-cover w-full rounded-md h-50" src="./image_resources/plumbers.jpeg"
+                                alt="">
+                            <h2 class="mt-2 text-2xl font-bold text-gray-700">Some header</h2>
+                        </div>
+                    </li>
+                    <li class="p-5 ">
+                        <div class="h-full p-5 border rounded-lg border-lg">
+                            <img class="object-cover w-full rounded-md h-50" src="./image_resources/carpentors.jpg"
+                                alt="">
+                            <h2 class="mt-2 text-2xl font-bold text-gray-700">Some header</h2>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="flex items-center w-2/12">
+                <div class="w-full">
+                    <button id="next-btn" class="p-3 ml-5 bg-white border border-gray-600 rounded-full shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />
+                        </svg>
+
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script>
+        const sliderContainer = document.getElementById('multipleItemCarouselContainer');
+        const multiCarouselSlider = sliderContainer.getElementsByTagName('ul')[0];
+        const slides = multiCarouselSlider.getElementsByTagName('li');
+        const sliderContainerWidth = sliderContainer.clientWidth;
+        const elementsToShow = 3;
+        const slideWith = sliderContainerWidth / elementsToShow;
+        multiCarouselSlider.style.width = slides.length * slideWith + "px";
+   
+        for (let i = 0; i < slides.length; i++) {
+            console.log(slides[i])
+            slides[i].style.width = slideWith + "px";
+        }
+
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        nextBtn.addEventListener('click', () => {
+
+            if (Math.round(+multiCarouselSlider.style.marginLeft.slice(0, -2)) != Math.round(-(slideWith * (slides.length - elementsToShow)))) {
+                multiCarouselSlider.style.marginLeft = ((+multiCarouselSlider.style.marginLeft.slice(0, -2)) - slideWith) + 'px'
+            }
+
+        })
+        prevBtn.addEventListener('click', () => {
+            if (+multiCarouselSlider.style.marginLeft.slice(0, 2) != 0) {
+                multiCarouselSlider.style.marginLeft = ((+multiCarouselSlider.style.marginLeft.slice(0, -2)) + slideWith) + 'px'
+            }
+        })
+    </script>
+</body>
+
+</html>

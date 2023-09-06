@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Swiper demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+    <!-- Link Swiper's CSS -->
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" /> -->
+    <link rel="stylesheet" href="swiper/swiper_bundle_min.css">
+    <link rel="stylesheet" href="output.css">
+    <!-- Demo styles -->
+    <style>
+
+    </style>
+</head>
+
+<body>
+    <!-- Swiper -->
+    <div class="container relative ">
+        <div class="absolute top-[50%] left-0 z-30 transform translate-y-[-50%] flex flex-row justify-between w-full">
+            <button id="prev-btn" class="p-2 mr-5 bg-white border border-gray-600 rounded-full shadow-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="w-3 h-3 lg:w-4 lg:h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
+                </svg>
+
+            </button>
+            <button id="next-btn" class="p-2 ml-5 bg-white border border-gray-600 rounded-full shadow-lg ">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="w-3 h-3 lg:w-4 lg:h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />
+                </svg>
+
+            </button>
+        </div>
+
+        <div id="mySwiper2" class="swiper mySwiper">
+            <div class="swiper-wrapper">
+                <li class="p-1 swiper-slide">
+                    <div class="h-full p-2 border rounded-lg border-lg">
+                        <span>Carpenter 1</span>
+                    </div>
+                </li>
+                <li class="p-1 swiper-slide">
+                    <div class="h-full p-2 border rounded-lg border-lg">
+                        <span>Carpenter 2</span>
+                    </div>
+                </li>
+                <li class="p-1 swiper-slide">
+                    <div class="h-full p-2 border rounded-lg border-lg">
+                        <span>Carpenter 3</span>
+                    </div>
+                </li>
+                <li class="p-1 swiper-slide">
+                    <div class="h-full p-2 border rounded-lg border-lg">
+                        <span>Carpenter 4</span>
+                    </div>
+                </li>
+                <li class="p-1 swiper-slide">
+                    <div class="h-full p-2 border rounded-lg border-lg">
+                        <span>Carpenter 5</span>
+                    </div>
+                </li>
+                <li class="p-1 swiper-slide">
+                    <div class="h-full p-2 border rounded-lg border-lg">
+                        <span>Carpenter 6</span>
+                    </div>
+                </li>
+                <li class="p-1 swiper-slide">
+                    <div class="h-full p-2 border rounded-lg border-lg">
+                        <span>Carpenter 6</span>
+                    </div>
+                </li>
+            </div>
+
+
+
+        </div>
+    </div>
+
+    <!-- Swiper JS -->
+    <script src="swiper/swiper_bundle.js"></script>
+
+    <!-- Initialize Swiper -->
+    <script>
+        var swiper = new Swiper("#mySwiper2 ", {
+
+            navigation: {
+                nextEl: "#next-btn",
+                prevEl: "#prev-btn",
+            },
+            spaceBetween: 24,
+            breakpoints: {
+                540: {
+                    slidesPerView: 1,
+                    spaceBetween: 20,
+                },
+                640: {
+                    slidesPerView: 2,
+                    spaceBetween: 20,
+                },
+                768: {
+                    slidesPerView: 4,
+                    spaceBetween: 40,
+                },
+                1024: {
+                    slidesPerView: 5,
+                    spaceBetween: 10,
+                },
+            },
+        });
+    </script>
+</body>
+
+</html>
