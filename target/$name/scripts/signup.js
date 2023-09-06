@@ -1,13 +1,13 @@
 import { getById } from "./util/getById.js";
 import { validate } from "./util/Validate.js";
+import { MakeRequest } from "./util/MakeRequests.js";
 const username = getById("username");
 const email = getById("email");
 const password = getById("password");
 const confirmPassword = getById("confirm-password");
 const errorBox = getById("errorBox");
 const errorDiv = getById("errorDivContainer");
-const signup = () => {
-    // alert("check check 1222")
+const signup = async () => {
     if (!validate(username, "username")) {
         errorDiv.classList.remove("hidden");
         errorBox.innerHTML = "Invalid username only numbers and texts are allowed";
@@ -28,12 +28,16 @@ const signup = () => {
         errorBox.innerHTML = "Passwords not matching";
         return;
     }
+    const form = new FormData();
+    form.append("name", "rag");
+    console.log(await MakeRequest("POST", "./signuptest", form, "text"));
+    console.log("ok ok ok ok ");
 };
 window.addEventListener('input', () => {
     errorDiv.classList.add("hidden");
     errorBox.innerHTML = "";
 });
 const btn = getById("signup-btn");
-btn?.addEventListener("click", () => {
-    signup();
+btn?.addEventListener("click", async () => {
+    await signup();
 });
