@@ -5,7 +5,13 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- <meta http-equiv="Content-Security-Policy" content="script-src " /> -->
+    <!-- <meta http-equiv="Content-Security-Policy-Report-Only"
+        content="script-src https://accounts.google.com/gsi/client; frame-src https://accounts.google.com/gsi/; connect-src https://accounts.google.com/gsi/;">
+
+    <meta> -->
     <link href="resources/style/output.css" rel="stylesheet">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 
 <body class="" style="background: #edf2f7;">
@@ -14,7 +20,7 @@
 
             <div class="w-full px-6 py-8 text-black bg-white rounded shadow-md">
                 <div class="flex justify-center w-full ">
-                    <img class="w-12 h-12" src="resources/image_resources/logo.png" alt="">
+                    <img class="w-10 h-10" src="resources/image_resources/logo.png" alt="">
                 </div>
                 <h1 class="mb-4 text-3xl font-semibold text-center">Sign up</h1>
                 <div id="errorDivContainer" class="hidden p-1 mb-3 border-2 border-red-400">
@@ -57,25 +63,37 @@
                     class="w-full py-3 my-1 text-center text-white rounded bg-maintheme hover:bg-green-dark focus:outline-none">Create
                     Account
                 </button>
+                <div class="flex justify-center w-full pt-3 pb-2 my-1 ">
+
+                    <div  id="g_id_onload"
+                        data-client_id="337084451495-b1tda8u3401dmtqcpcfsrlgprnrs0op8.apps.googleusercontent.com"
+                        data-context="signup" data-ux_mode="redirect" data-login_uri="/fix_mia_app_war_exploded"
+                        data-callback="signup_google" data-nonce="" data-itp_support="true">
+                    </div>
+
+                    <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline"
+                        data-text="signup_with" data-size="large" data-locale="en-US" data-logo_alignment="left">
+                    </div>
+                </div>
 
                 <div class="mt-4 text-sm text-center text-grey-dark">
                     By signing up, you agree to the
-                    <a class="no-underline border-b border-grey-dark text-grey-dark" href="#">
-                        Terms of Service
-                    </a> and
-                    <a class="no-underline border-b border-grey-dark text-grey-dark" href="#">
-                        Privacy Policy
-                    </a>
+                    Terms of Service
+                    and
+                    Privacy Policy
+
                 </div>
             </div>
 
-            <div class="mt-6 text-grey-dark">
+            <div class="mt-3 text-grey-dark">
                 Already have an account?
                 <a class="no-underline border-b border-blue text-blue" href="../login/">
                     Log in
                 </a>.
             </div>
         </div>
+
+
         <script>var exports = {};</script>
         <script type="module" src="${SCRIPTS}signup.js"></script>
         <script>

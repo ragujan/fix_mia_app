@@ -1,23 +1,13 @@
-const MakeRequest = async (method, url, data, responseType) => {
+async function MakeRequest(method, url, data, responseType) {
     try {
         const requestOptions = {
             method,
             headers: {},
         };
         if (data !== null) {
-            if (method === "POST") {
-                requestOptions.body = data;
-                requestOptions.method = "POST";
-            }
-            if (method === "GET") {
+            if (method === "GET" && data instanceof Object) {
                 requestOptions.method = "GET";
-                let params;
-                if (typeof data === 'string' || data instanceof String) {
-                    params = new URLSearchParams(JSON.stringify(data));
-                }
-                if (params) {
-                    url += `?${params.toString()}`;
-                }
+                const params = new URLSearchParams(JSON.stringify(data));
             }
             const response = await fetch(url, requestOptions);
             if (responseType.toLocaleLowerCase() === "json") {
@@ -33,5 +23,5 @@ const MakeRequest = async (method, url, data, responseType) => {
     catch (e) {
         throw new Error("Request problems");
     }
-};
+}
 export { MakeRequest };
