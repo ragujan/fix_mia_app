@@ -1,21 +1,29 @@
 async function MakeRequest(
-    method: 'GET'|'POST',
+    method: 'GET' | 'POST',
     url: string,
-    data:  object|FormData,
-    responseType: 'json' | 'text'
+    data: string ,
+    responseType: 'json' | 'text',
+    contentType: string
 ) {
     try {
         const requestOptions: any = {
             method,
-            headers: {},
+            headers: {
+                'Content-Type': contentType
+            },
         }
         if (data !== null) {
-  
-            if (method === "GET" && data instanceof Object ) {
+            if (method === "GET" && typeof data === 'object') {
                 requestOptions.method = "GET";
                 const params = new URLSearchParams(JSON.stringify(data));
+                url += `?${params}`
             }
+            if (method === "POST" ) {
+                requestOptions.method = "POST";
+                requestOptions.body = data;
+                console.log(requestOptions)
 
+            }
             const response = await fetch(url, requestOptions);
             if (responseType.toLocaleLowerCase() === "json") {
                 const json = await response.json();
@@ -31,4 +39,5 @@ async function MakeRequest(
         throw new Error("Request problems")
     }
 }
+
 export { MakeRequest };

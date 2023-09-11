@@ -28,10 +28,34 @@ const signup = async () => {
         errorBox.innerHTML = "Passwords not matching";
         return;
     }
-    const form = new FormData();
-    form.append("name", "rag");
-    console.log(await MakeRequest("POST", "./signuptest", form, "text"));
-    console.log("ok ok ok ok ");
+    let form = new FormData();
+    form.append("username", username.value);
+    form.append("email", email.value);
+    form.append("password", password.value);
+    form.append("confirmpassword", confirmPassword.value);
+    const contentType = "applicaion/json";
+    const url = "./signupuser";
+    const formDataObj = {
+        username: '',
+        email: '',
+        password: '',
+        confirmpassword: ''
+    };
+    form.forEach((value, key) => {
+        if (key in formDataObj) {
+            formDataObj[key] = value;
+        }
+    });
+    let response1 = await MakeRequest("POST", url, JSON.stringify(formDataObj), "text", contentType);
+    console.log(response1);
+    console.log("stringy object ", JSON.stringify(formDataObj));
+    let response2 = await fetch(url, {
+        method: "POST", body: JSON.stringify(formDataObj), headers: {
+            'Content-Type': contentType
+        }
+    });
+    const text = await response2.text();
+    console.log(text);
 };
 window.addEventListener('input', () => {
     errorDiv.classList.add("hidden");

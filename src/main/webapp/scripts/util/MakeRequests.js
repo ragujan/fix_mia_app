@@ -1,13 +1,21 @@
-async function MakeRequest(method, url, data, responseType) {
+async function MakeRequest(method, url, data, responseType, contentType) {
     try {
         const requestOptions = {
             method,
-            headers: {},
+            headers: {
+                'Content-Type': contentType
+            },
         };
         if (data !== null) {
-            if (method === "GET" && data instanceof Object) {
+            if (method === "GET" && typeof data === 'object') {
                 requestOptions.method = "GET";
                 const params = new URLSearchParams(JSON.stringify(data));
+                url += `?${params}`;
+            }
+            if (method === "POST") {
+                requestOptions.method = "POST";
+                requestOptions.body = data;
+                console.log(requestOptions);
             }
             const response = await fetch(url, requestOptions);
             if (responseType.toLocaleLowerCase() === "json") {

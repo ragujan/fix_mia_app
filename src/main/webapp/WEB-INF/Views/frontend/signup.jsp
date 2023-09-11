@@ -67,7 +67,7 @@
 
                     <div  id="g_id_onload"
                         data-client_id="337084451495-b1tda8u3401dmtqcpcfsrlgprnrs0op8.apps.googleusercontent.com"
-                        data-context="signup" data-ux_mode="redirect" data-login_uri="/fix_mia_app_war_exploded"
+                        data-context="signup" data-ux_mode="redirect" data-login_uri="http://localhost:8080/fix_mia_app_war_exploded/signupgooglehome"
                         data-callback="signup_google" data-nonce="" data-itp_support="true">
                     </div>
 
@@ -145,6 +145,12 @@
                 confirmPassword.value = confirmPassword1;
             }
             test("rag", "rag@gmail.com", "rag!!123RAG", "rag!!123RAG");
+        </script>
+        <script>
+         
+            const signup_google  = ()=>{
+              alert("HEY")
+            }
         </script>
     </div>
 </body>

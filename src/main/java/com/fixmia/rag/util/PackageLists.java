@@ -2,8 +2,8 @@ package com.fixmia.rag.util;
 
 public enum PackageLists {
     CONTROLLERS("com.fixmia.rag.controllers"),
-    LISTERNER("com.fixmia.rag.controllers"),
-    MIDDLEWARE("com.fixmia.rag.controllers"),
+    LISTERNER("com.fixmia.rag.listener"),
+    MIDDLEWARE("com.fixmia.rag.middleware"),
     ;
 
     public String getPackageName() {
