@@ -34,7 +34,11 @@ public class Signup {
     public Viewable get() {
         return new Viewable("/frontend/signup");
     }
-
+    @GET
+    @Path("/login")
+    public Viewable getlogin() {
+        return new Viewable("/frontend/login");
+    }
     @POST
     @Path("/signupuser")
     @Consumes(MediaType.APPLICATION_JSON)
