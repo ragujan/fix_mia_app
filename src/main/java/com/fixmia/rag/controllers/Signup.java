@@ -2,15 +2,17 @@ package com.fixmia.rag.controllers;
 
 import com.fixmia.rag.annotations.IsUser;
 import com.fixmia.rag.dtos.SignupDTO;
+import com.fixmia.rag.entities.User;
+import com.fixmia.rag.util.InputValidator;
+import com.fixmia.rag.util.hibernate.AddRow;
+import com.fixmia.rag.util.hibernate.RowChecker;
 import com.google.api.client.http.HttpTransport;
-import com.google.api.client.http.LowLevelHttpRequest;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.server.mvc.Viewable;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
@@ -34,18 +36,42 @@ public class Signup {
     public Viewable get() {
         return new Viewable("/frontend/signup");
     }
-    @GET
-    @Path("/login")
-    public Viewable getlogin() {
-        return new Viewable("/frontend/login");
-    }
+  
     @POST
     @Path("/signupuser")
     @Consumes(MediaType.APPLICATION_JSON)
     public String post(SignupDTO dto){
         boolean signupStatus = false;
-        System.out.println("Email is "+dto.getEmail());
-        return "Ok";
+        boolean validationStatus  = false;
+        String username = dto.getUsername();
+        String email = dto.getEmail();
+        String password = dto.getPassword();
+        String confirmPassword = dto.getConfirmPassword();
+        if (!InputValidator.inputTextIsValid(username)) {
+            return "Employee user name is invalid";
+        }else if (!InputValidator.inputEmailIsValid(email) || RowChecker.rowExists("User", "email", email)) {
+            return "User email is invalid or already exists";
+        }else if(!InputValidator.validPasswod(password)){
+            return "Password is invalid";
+        }else if(!password.equals(confirmPassword)){
+            return "Passwords don't match";
+        }else{
+            validationStatus = true;
+        }
+        if(validationStatus){
+            User user = new User();
+            user.setEmail(email);
+            user.setUsername(username);
+            user.setPassword(password);
+            AddRow.addRow(user);
+
+
+            return "Ok";
+        }else{
+
+
+            return "Error";
+        }
     }
     @POST
     @Path("signupgooglehome")
@@ -72,12 +98,12 @@ public class Signup {
 
             // Get profile information from payload
             String email = payload.getEmail();
-            boolean emailVerified = Boolean.valueOf(payload.getEmailVerified());
+            // boolean emailVerified = Boolean.valueOf(payload.getEmailVerified());
             String name = (String) payload.get("name");
-            String pictureUrl = (String) payload.get("picture");
-            String locale = (String) payload.get("locale");
-            String familyName = (String) payload.get("family_name");
-            String givenName = (String) payload.get("given_name");
+            // String pictureUrl = (String) payload.get("picture");
+            // String locale = (String) payload.get("locale");
+            // String familyName = (String) payload.get("family_name");
+            // String givenName = (String) payload.get("given_name");
 
             // Use or store profile information
             // ...

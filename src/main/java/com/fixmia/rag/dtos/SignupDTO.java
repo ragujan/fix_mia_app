@@ -4,7 +4,7 @@ public class SignupDTO {
       private String email;
       private String username;
       private String password;
-      private String confirmpassword;
+      private String confirmPassword;
 
     public String getEmail() {
         return email;
@@ -30,11 +30,11 @@ public class SignupDTO {
         this.password = password;
     }
 
-    public String getConfirmpassword() {
-        return confirmpassword;
+    public String getConfirmPassword() {
+        return confirmPassword;
     }
 
-    public void setConfirmpassword(String confirmpassword) {
-        this.confirmpassword = confirmpassword;
+    public void setConfirmPassword(String confirmPassword) {
+        this.confirmPassword = confirmPassword;
     }
 }

@@ -65,9 +65,10 @@
                 </button>
                 <div class="flex justify-center w-full pt-3 pb-2 my-1 ">
 
-                    <div  id="g_id_onload"
+                    <div id="g_id_onload"
                         data-client_id="337084451495-b1tda8u3401dmtqcpcfsrlgprnrs0op8.apps.googleusercontent.com"
-                        data-context="signup" data-ux_mode="redirect" data-login_uri="http://localhost:8080/fix_mia_app_war_exploded/signupgooglehome"
+                        data-context="signup" data-ux_mode="redirect"
+                        data-login_uri="http://localhost:8080/fix_mia_app_war_exploded/signupgooglehome"
                         data-callback="signup_google" data-nonce="" data-itp_support="true">
                     </div>
 
@@ -94,65 +95,66 @@
         </div>
 
 
-        <script>var exports = {};</script>
-        <script type="module" src="${SCRIPTS}signup.js"></script>
-        <script>
 
-            const passwordToggle1 = document.getElementById('js-password-toggle-1')
-
-            passwordToggle1.addEventListener('change', function () {
-
-                const password = document.getElementById('password'),
-                    passwordLabel = document.querySelector('.js-password-label-1')
-
-                if (password.type === 'password') {
-                    password.type = 'text'
-                    passwordLabel.innerHTML = 'hide'
-                } else {
-                    password.type = 'password'
-                    passwordLabel.innerHTML = 'show'
-                }
-
-                password.focus()
-            })
-            const passwordToggle2 = document.getElementById('js-password-toggle-2')
-
-            passwordToggle2.addEventListener('change', function () {
-
-                const password = document.getElementById('confirm-password'),
-                    passwordLabel = document.querySelector('.js-password-label-2')
-
-                if (password.type === 'password') {
-                    password.type = 'text'
-                    passwordLabel.innerHTML = 'hide'
-                } else {
-                    password.type = 'password'
-                    passwordLabel.innerHTML = 'show'
-                }
-
-                password.focus()
-            })
-            const uname = document.getElementById("username")
-            const email = document.getElementById("email")
-            const password = document.getElementById("password");
-            const confirmPassword = document.getElementById("confirm-password");
-
-
-            const test = (uname1, email1, password1, confirmPassword1) => {
-                uname.value = uname1;
-                email.value = email1;
-                password.value = password1;
-                confirmPassword.value = confirmPassword1;
-            }
-            test("rag", "rag@gmail.com", "rag!!123RAG", "rag!!123RAG");
-        </script>
-        <script>
-         
-            const signup_google  = ()=>{
-              alert("HEY")
-            }
-        </script>
     </div>
+    <script>var exports = {};</script>
+    <script type="module" src="${SCRIPTS}signup.js"></script>
+    <script>
+
+        const passwordToggle1 = document.getElementById('js-password-toggle-1')
+
+        passwordToggle1.addEventListener('change', function () {
+
+            const password = document.getElementById('password'),
+                passwordLabel = document.querySelector('.js-password-label-1')
+
+            if (password.type === 'password') {
+                password.type = 'text'
+                passwordLabel.innerHTML = 'hide'
+            } else {
+                password.type = 'password'
+                passwordLabel.innerHTML = 'show'
+            }
+
+            password.focus()
+        })
+        const passwordToggle2 = document.getElementById('js-password-toggle-2')
+
+        passwordToggle2.addEventListener('change', function () {
+
+            const password = document.getElementById('confirm-password'),
+                passwordLabel = document.querySelector('.js-password-label-2')
+
+            if (password.type === 'password') {
+                password.type = 'text'
+                passwordLabel.innerHTML = 'hide'
+            } else {
+                password.type = 'password'
+                passwordLabel.innerHTML = 'show'
+            }
+
+            password.focus()
+        })
+        const uname = document.getElementById("username")
+        const email = document.getElementById("email")
+        const password = document.getElementById("password");
+        const confirmPassword = document.getElementById("confirm-password");
+
+
+        const test = (uname1, email1, password1, confirmPassword1) => {
+            uname.value = uname1;
+            email.value = email1;
+            password.value = password1;
+            confirmPassword.value = confirmPassword1;
+        }
+        test("rag", "rag@gmail.com", "rag!!123RAG", "rag!!123RAG");
+    </script>
+    <script>
+
+        const signup_google = () => {
+            alert("HEY")
+        }
+    </script>
 </body>
 
 </html>
