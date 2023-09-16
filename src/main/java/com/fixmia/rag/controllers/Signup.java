@@ -21,6 +21,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
@@ -31,55 +32,60 @@ public class Signup {
 
     @Context
     HttpServletRequest request;
+
     @GET
     @Path("/signup")
     public Viewable get() {
         return new Viewable("/frontend/signup");
     }
-  
+
     @POST
     @Path("/signupuser")
     @Consumes(MediaType.APPLICATION_JSON)
-    public String post(SignupDTO dto){
+    public String post(SignupDTO dto) {
         boolean signupStatus = false;
-        boolean validationStatus  = false;
+        boolean validationStatus = false;
         String username = dto.getUsername();
         String email = dto.getEmail();
         String password = dto.getPassword();
         String confirmPassword = dto.getConfirmPassword();
         if (!InputValidator.inputTextIsValid(username)) {
-            return "Employee user name is invalid";
-        }else if (!InputValidator.inputEmailIsValid(email) || RowChecker.rowExists("User", "email", email)) {
-            return "User email is invalid or already exists";
-        }else if(!InputValidator.validPasswod(password)){
-            return "Password is invalid";
-        }else if(!password.equals(confirmPassword)){
-            return "Passwords don't match";
-        }else{
+            return "Non-Exception:Employee user name is invalid";
+        } else if (!InputValidator.inputEmailIsValid(email)) {
+            return "Non-Exception:User email is invalid";
+        } else if ( RowChecker.rowExists("User", "email", email)) {
+            return "Non-Exception:This email already exists";
+        } else if (!InputValidator.validPasswod(password)) {
+            return "Non-Exception:Password is invalid";
+        } else if (!password.equals(confirmPassword)) {
+            return "Non-Exception:Passwords don't match";
+        } else {
             validationStatus = true;
         }
-        if(validationStatus){
+        if (validationStatus) {
             User user = new User();
             user.setEmail(email);
             user.setUsername(username);
             user.setPassword(password);
-            AddRow.addRow(user);
+            boolean addRowStatus = AddRow.addRow(user);
 
-
-            return "Ok";
-        }else{
-
-
-            return "Error";
+            if (addRowStatus) {
+                return "Non-Exception:User added successfully";
+            } else {
+                return "Non-Exception:User couldn't be added";
+            }
+        } else {
+            return "Non-Exception:Error";
         }
     }
+
     @POST
     @Path("signupgooglehome")
     public Viewable post(@FormParam("credential") String dataClientID) throws GeneralSecurityException, IOException {
         String CLIENT_ID = "337084451495-b1tda8u3401dmtqcpcfsrlgprnrs0op8.apps.googleusercontent.com";
-        System.out.println("Data Client id is "+dataClientID);
+        System.out.println("Data Client id is " + dataClientID);
         System.out.println("Hey a request has been made");
-        HttpTransport transport = new NetHttpTransport() ;
+        HttpTransport transport = new NetHttpTransport();
         JsonFactory jsonFactory = new GsonFactory();
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
                 // Specify the CLIENT_ID of the app that accesses the backend:
@@ -107,12 +113,12 @@ public class Signup {
 
             // Use or store profile information
             // ...
-            System.out.println("the verified email is "+email);
-            System.out.println("user name is "+name);
+            System.out.println("the verified email is " + email);
+            System.out.println("user name is " + name);
 
             HttpSession session = request.getSession();
-            session.setAttribute("username",name);
-            session.setAttribute("email",email);
+            session.setAttribute("username", name);
+            session.setAttribute("email", email);
 
             return new Viewable("/homepage");
         } else {
