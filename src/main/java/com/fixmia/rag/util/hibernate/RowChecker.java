@@ -24,32 +24,6 @@ public class RowChecker {
             columnValues.add(value);
         }
     }
-
-    public static boolean rowExists(String tableName, String columnName, Object columnValue) {
-//        table name should be entity name eg: Employee not employee from database table
-        SessionFactory sessionFactory = InitialSessionFactory.getSessionFactory();
-
-        Session session = sessionFactory.openSession();
-        boolean isRowExists = false;
-        int rows = 0;
-        try {
-
-            String hql = "from " + tableName + " as tab where tab." + columnName + " =:value";
-            Query<Object> query = session.createQuery(hql);
-            query.setParameter("value", columnValue);
-            rows = query.list().size();
-
-        } catch (HibernateException ex) {
-            ex.printStackTrace();
-        }
-        if (rows >= 1) {
-            isRowExists = true;
-        } else {
-            isRowExists = false;
-        }
-        return isRowExists;
-    }
-
     public static boolean rowExists(String tableName) {
         if (columnNames.size() != columnValues.size() || columnNames.isEmpty() || columnValues.isEmpty())
             throw new IllegalStateException("Columns and columnValues lists must be same and cannot be empty");
@@ -80,6 +54,32 @@ public class RowChecker {
         columnNames.clear();
         return isRowExists;
     }
+
+    public static boolean rowExists(String tableName, String columnName, Object columnValue) {
+//        table name should be entity name eg: Employee not employee from database table
+        SessionFactory sessionFactory = InitialSessionFactory.getSessionFactory();
+
+        Session session = sessionFactory.openSession();
+        boolean isRowExists = false;
+        int rows = 0;
+        try {
+
+            String hql = "from " + tableName + " as tab where tab." + columnName + " =:value";
+            Query<Object> query = session.createQuery(hql);
+            query.setParameter("value", columnValue);
+            rows = query.list().size();
+
+        } catch (HibernateException ex) {
+            ex.printStackTrace();
+        }
+        if (rows >= 1) {
+            isRowExists = true;
+        } else {
+            isRowExists = false;
+        }
+        return isRowExists;
+    }
+
 
     public static <T> T getEntityByColumn(Class<T> entity, String columnName, Object value) {
         SessionFactory sessionFactory = InitialSessionFactory.getSessionFactory();

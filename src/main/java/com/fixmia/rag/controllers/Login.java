@@ -36,8 +36,11 @@ public class Login {
             validationStatus = true;
         }
         if (validationStatus) {
+
             RowChecker.addColumnNames("email","password");
             RowChecker.addColumnValues(email, password);
+
+
             if (RowChecker.rowExists("User")) {
                 return ReturnMessage.nonException("User is there");
             } else {
