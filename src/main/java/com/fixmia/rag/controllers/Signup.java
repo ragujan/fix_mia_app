@@ -83,7 +83,7 @@ public class Signup {
     @POST
     @Path("signupgooglehome")
     public Viewable post(@FormParam("credential") String dataClientID) throws GeneralSecurityException, IOException {
-        String CLIENT_ID = APIKeys.getGoogleid();
+        String CLIENT_ID = APIKeys.getGOOGLEID();
         System.out.println("Data Client id is " + dataClientID);
         System.out.println("Hey a request has been made");
         HttpTransport transport = new NetHttpTransport();
