@@ -116,7 +116,7 @@ fabric.properties
 # Azure Toolkit for IntelliJ plugin
 # https://plugins.jetbrains.com/plugin/8053-azure-toolkit-for-intellij
 .idea/**/azureSettings.xml
-.env
+env
 ### Java ###
 # Compiled class file
 *.class
@@ -142,5 +142,5 @@ fabric.properties
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
-
+src/main/java/com/fixmia/rag/util/APIKeys.java
 # End of https://www.toptal.com/developers/gitignore/api/java,intellij

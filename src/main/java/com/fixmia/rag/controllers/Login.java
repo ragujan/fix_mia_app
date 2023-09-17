@@ -3,8 +3,8 @@ package com.fixmia.rag.controllers;
 import com.fixmia.rag.entities.User;
 import com.fixmia.rag.util.InputValidator;
 import com.fixmia.rag.util.ReturnMessage;
-import com.fixmia.rag.util.hibernate.AddRow;
 import com.fixmia.rag.util.hibernate.RowChecker;
+import io.github.cdimascio.dotenv.Dotenv;
 import org.glassfish.jersey.server.mvc.Viewable;
 
 import com.fixmia.rag.annotations.IsUser;
@@ -37,7 +37,7 @@ public class Login {
         }
         if (validationStatus) {
 
-            RowChecker.addColumnNames("email","password");
+            RowChecker.addColumnNames("email", "password");
             RowChecker.addColumnValues(email, password);
 
 
@@ -56,4 +56,12 @@ public class Login {
     public Viewable getlogin() {
         return new Viewable("/frontend/login");
     }
+
+    @GET
+    @Path("/login2")
+    public String get() {
+        Dotenv dotenv = Dotenv.load();
+        return dotenv.get("ENV_PORT");
+    }
+
 }

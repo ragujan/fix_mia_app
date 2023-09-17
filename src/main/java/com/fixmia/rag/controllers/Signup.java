@@ -3,6 +3,7 @@ package com.fixmia.rag.controllers;
 import com.fixmia.rag.annotations.IsUser;
 import com.fixmia.rag.dtos.SignupDTO;
 import com.fixmia.rag.entities.User;
+import com.fixmia.rag.util.APIKeys;
 import com.fixmia.rag.util.InputValidator;
 import com.fixmia.rag.util.hibernate.AddRow;
 import com.fixmia.rag.util.hibernate.RowChecker;
@@ -82,7 +83,7 @@ public class Signup {
     @POST
     @Path("signupgooglehome")
     public Viewable post(@FormParam("credential") String dataClientID) throws GeneralSecurityException, IOException {
-        String CLIENT_ID = "337084451495-b1tda8u3401dmtqcpcfsrlgprnrs0op8.apps.googleusercontent.com";
+        String CLIENT_ID = APIKeys.getGoogleid();
         System.out.println("Data Client id is " + dataClientID);
         System.out.println("Hey a request has been made");
         HttpTransport transport = new NetHttpTransport();
