@@ -1,13 +1,16 @@
 package com.fixmia.rag.controllers;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 
 @Path("/")
 public class ClientAPI {
     @GET
-    @Path("/google-api")
-    public String getGoogleApi(){
-        return "337084451495-b1tda8u3401dmtqcpcfsrlgprnrs0op8.apps.googleusercontent.com";
+    @Path("/googleapi")
+    public String getGoogleApi() {
+        Dotenv dotenv = Dotenv.load();
+        String googleID = dotenv.get("GOOGLE_ID");
+        return googleID;
     }
 }

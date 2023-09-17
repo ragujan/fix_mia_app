@@ -207,14 +207,26 @@
             <artifactId>xpp3</artifactId>
             <version>1.1.4c</version>
         </dependency>
-        <!--to read and load env files-->
+        <!--to read and load .env files-->
+        <!-- https://mvnrepository.com/artifact/io.github.cdimascio/java-dotenv -->
         <dependency>
             <groupId>io.github.cdimascio</groupId>
-            <artifactId>dotenv-java</artifactId>
-            <version>3.0.0</version>
+            <artifactId>java-dotenv</artifactId>
+            <version>5.2.2</version>
         </dependency>
+
     </dependencies>
+
     <build>
         <finalName>$name</finalName>
+        <resources>
+            <resource>
+                <directory>${project.basedir}</directory>
+                <includes>
+                    <include>.env</include>
+                </includes>
+            </resource>
+        </resources>
+
     </build>
 </project>

@@ -3,7 +3,6 @@ package com.fixmia.rag.controllers;
 import com.fixmia.rag.annotations.IsUser;
 import com.fixmia.rag.dtos.SignupDTO;
 import com.fixmia.rag.entities.User;
-import com.fixmia.rag.util.APIKeys;
 import com.fixmia.rag.util.InputValidator;
 import com.fixmia.rag.util.hibernate.AddRow;
 import com.fixmia.rag.util.hibernate.RowChecker;
@@ -11,6 +10,7 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
+import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
@@ -83,7 +83,9 @@ public class Signup {
     @POST
     @Path("signupgooglehome")
     public Viewable post(@FormParam("credential") String dataClientID) throws GeneralSecurityException, IOException {
-        String CLIENT_ID = APIKeys.getGOOGLEID();
+        Dotenv dotenv = Dotenv.load();
+        String googleID = dotenv.get("GOOGLE_ID");
+        String CLIENT_ID = googleID ;
         System.out.println("Data Client id is " + dataClientID);
         System.out.println("Hey a request has been made");
         HttpTransport transport = new NetHttpTransport();

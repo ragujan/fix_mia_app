@@ -25,12 +25,13 @@ public class UserValidation implements ContainerRequestFilter {
 
     @Override
     public void filter(ContainerRequestContext containerRequestContext) throws IOException {
-        System.out.println("ok------IsUserImpl");
         HttpSession session = request.getSession();
         String path = containerRequestContext.getUriInfo().getPath();
+        System.out.println("requested path is "+path);
+
 
         if (session.getAttribute("username") == null) {
-            System.out.println("not a authenticated user");
+//            System.out.println("not a authenticated user");
 
 
 //            containerRequestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).entity("Unauthenticated User").build());
