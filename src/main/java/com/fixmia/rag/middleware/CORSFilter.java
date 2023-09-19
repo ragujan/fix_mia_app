@@ -24,7 +24,6 @@ public class CORSFilter implements ContainerResponseFilter {
         String allowedOrigin = dotenv.get("ALLOWED_ORIGIN");
         System.out.println("allowed origin is "+allowedOrigin);
         responseContext.getHeaders().add("Access-Control-Allow-Origin", allowedOrigin);
-//        responseContext.getHeaders().add("Access-Control-Allow-Origin", "http://127.0.0.1:5173");
         responseContext.getHeaders().add("Access-Control-Allow-Credentials", "true");
         responseContext.getHeaders().add("Access-Control-Allow-Headers", "origin, content-type, accept, authorization");
         responseContext.getHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD");
