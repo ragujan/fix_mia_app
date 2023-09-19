@@ -219,14 +219,15 @@
 
     <build>
         <finalName>$name</finalName>
-        <resources>
-            <resource>
-                <directory>${project.basedir}</directory>
-                <includes>
-                    <include>.env</include>
-                </includes>
-            </resource>
-        </resources>
+<!--        <resources>-->
+<!--            <resource>-->
+<!--                <directory>${project.basedir}</directory>-->
+<!--                <includes>-->
+<!--                    <include>.env</include>-->
+<!--                </includes>-->
+<!--            </resource>-->
+<!--       -->
+<!--        </resources>-->
 
     </build>
 </project>

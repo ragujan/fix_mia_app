@@ -21,10 +21,38 @@ import jakarta.ws.rs.core.Context;
 public class Login {
     @Context
     HttpServletRequest httpServletRequest;
-
-    @Path("loginuser")
+    @Path("/loginuser")
     @POST
     public String post(LoginDTO dto) {
+        boolean validationStatus = false;
+        String email = dto.getEmail();
+        String password = dto.getPassword();
+        if (!InputValidator.inputEmailIsValid(email)) {
+            return ReturnMessage.nonException("Email is invalid");
+        } else if (!InputValidator.validPasswod(password)) {
+            return ReturnMessage.nonException("Not a Valid Password");
+        } else {
+            validationStatus = true;
+        }
+        if (validationStatus) {
+
+            RowChecker.addColumnNames("email", "password");
+            RowChecker.addColumnValues(email, password);
+
+
+            if (RowChecker.rowExists("User")) {
+                return ReturnMessage.nonException("User is there");
+            } else {
+                return ReturnMessage.nonException("User couldn't be found");
+            }
+        } else {
+            return ReturnMessage.nonException("Validation Error");
+        }
+    }
+
+    @Path("frontend/loginuser")
+    @POST
+    public String post2(LoginDTO dto) {
         boolean validationStatus = false;
         String email = dto.getEmail();
         String password = dto.getPassword();

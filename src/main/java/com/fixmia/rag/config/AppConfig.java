@@ -1,8 +1,7 @@
 package com.fixmia.rag.config;
 
-import com.fixmia.rag.filter.CORSFilter;
+import com.fixmia.rag.middleware.CORSFilter;
 import com.fixmia.rag.util.PackageLists;
-import jakarta.ws.rs.ApplicationPath;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.mvc.jsp.JspMvcFeature;
 

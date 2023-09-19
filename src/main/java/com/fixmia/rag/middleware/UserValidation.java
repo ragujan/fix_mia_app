@@ -2,6 +2,8 @@ package com.fixmia.rag.middleware;
 
 
 import com.fixmia.rag.annotations.IsUser;
+import io.github.cdimascio.dotenv.Dotenv;
+import jakarta.annotation.Priority;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -16,7 +18,7 @@ import java.io.IOException;
 @Provider
 @IsUser
 //@PreMatching
-
+@Priority(2)
 public class UserValidation implements ContainerRequestFilter {
     @Context
     HttpServletRequest request;
@@ -25,20 +27,24 @@ public class UserValidation implements ContainerRequestFilter {
 
     @Override
     public void filter(ContainerRequestContext containerRequestContext) throws IOException {
+
         HttpSession session = request.getSession();
         String path = containerRequestContext.getUriInfo().getPath();
-        System.out.println("requested path is "+path);
+//        System.out.println("requested path is "+path);
+        Dotenv dotenv = Dotenv.load();
+        String allowedOrigin = dotenv.get("ALLOWED_ORIGIN");
 
-
+        String origin = containerRequestContext.getHeaderString("Origin");
+//        System.out.println("origin is  "+origin);
+        if(path.equals("googleapi")  && (origin == null || !(origin.equals(allowedOrigin) || origin.equals("http://127.0.0.1:5173"))) ){
+            containerRequestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).entity("Unauthorized origin").build());
+        }
         if (session.getAttribute("username") == null) {
-//            System.out.println("not a authenticated user");
 
-
-//            containerRequestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).entity("Unauthenticated User").build());
         } else {
 
             if(path.equals("signup") || path.equals("signin")){
-                containerRequestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
+//                containerRequestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
             }else{
 
             }

@@ -12,6 +12,5 @@ public class ContextListener implements ServletContextListener {
         ServletContext context = event.getServletContext();
         context.setAttribute("BASE_URL",context.getContextPath()+"/");
         context.setAttribute("SCRIPTS",context.getContextPath()+"/scripts/");
-        System.out.println(context.getAttribute("SCRIPTS").toString());;
     }
 }

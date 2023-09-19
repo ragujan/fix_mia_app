@@ -1,9 +1,10 @@
 package com.fixmia.rag.controllers;
 
+import com.fixmia.rag.annotations.IsGoogleApiRequest;
 import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
-
+@IsGoogleApiRequest
 @Path("/")
 public class ClientAPI {
     @GET
