@@ -1,6 +1,6 @@
 package com.fixmia.rag.dtos;
 
-public class SignupDTO {
+public class UserDTO {
       private String email;
       private String username;
       private String password;

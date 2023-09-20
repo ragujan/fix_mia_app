@@ -1,32 +1,18 @@
 package com.fixmia.rag.controllers;
 
 import com.fixmia.rag.annotations.IsUser;
-import com.fixmia.rag.dtos.SignupDTO;
+import com.fixmia.rag.dtos.UserDTO;
 import com.fixmia.rag.entities.User;
 import com.fixmia.rag.util.InputValidator;
 import com.fixmia.rag.util.ReturnMessage;
 import com.fixmia.rag.util.hibernate.AddRow;
 import com.fixmia.rag.util.hibernate.RowChecker;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.gson.GsonFactory;
-import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import org.glassfish.jersey.server.mvc.Viewable;
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.util.Collections;
 
 @IsUser
 @Path("/")
@@ -44,7 +30,7 @@ public class Signup {
     @POST
     @Path("/signupuser")
     @Consumes(MediaType.APPLICATION_JSON)
-    public String post(SignupDTO dto) {
+    public String post(UserDTO dto) {
         boolean signupStatus = false;
         boolean validationStatus = false;
         String username = dto.getUsername();
