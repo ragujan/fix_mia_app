@@ -24,16 +24,7 @@ public class GoogleAuth {
     @POST
     @Path("googleoauthlogin")
     public String postLogin(@FormParam("credential") String credential)throws GeneralSecurityException, IOException {
-        Dotenv dotenv = Dotenv.load();
-        String googleID = dotenv.get("GOOGLE_ID");
-        HttpTransport transport = new NetHttpTransport();
-        JsonFactory jsonFactory = new GsonFactory();
-        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
-                .setAudience(Collections.singletonList(googleID))
-                .build();
-
-
-        GoogleIdToken idToken = verifier.verify(credential);
+        GoogleIdToken idToken = verifyGoogleIdToken(credential);
         if (idToken != null) {
             GoogleIdToken.Payload payload = idToken.getPayload();
 
@@ -58,16 +49,8 @@ public class GoogleAuth {
     @POST
     @Path("googleoauthsignup")
     public String postSignUp(@FormParam("credential") String credential)throws GeneralSecurityException, IOException {
-        Dotenv dotenv = Dotenv.load();
-        String googleID = dotenv.get("GOOGLE_ID");
-        HttpTransport transport = new NetHttpTransport();
-        JsonFactory jsonFactory = new GsonFactory();
-        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
-                .setAudience(Collections.singletonList(googleID))
-                .build();
 
-
-        GoogleIdToken idToken = verifier.verify(credential);
+        GoogleIdToken idToken = verifyGoogleIdToken(credential);
         if (idToken != null) {
             GoogleIdToken.Payload payload = idToken.getPayload();
 
@@ -94,6 +77,20 @@ public class GoogleAuth {
             System.out.println(ReturnMessage.nonException("Invalid ID token."));
             return ReturnMessage.nonException("Invalid ID token.");
         }
+    }
+
+    public GoogleIdToken verifyGoogleIdToken(String credential) throws GeneralSecurityException, IOException {
+        Dotenv dotenv = Dotenv.load();
+        String googleID = dotenv.get("GOOGLE_ID");
+        HttpTransport transport = new NetHttpTransport();
+        JsonFactory jsonFactory = new GsonFactory();
+        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
+                .setAudience(Collections.singletonList(googleID))
+                .build();
+
+
+        GoogleIdToken idToken = verifier.verify(credential);
+        return idToken;
     }
 
 }

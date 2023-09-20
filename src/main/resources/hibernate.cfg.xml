@@ -13,5 +13,6 @@
     <property name="hibernate.show_sql">true</property>
     <mapping class="com.fixmia.rag.entities.User"/>
     <mapping class="com.fixmia.rag.entities.BaseEntity"/>
+    <mapping class="com.fixmia.rag.entities.JTI"/>
   </session-factory>
 </hibernate-configuration>
