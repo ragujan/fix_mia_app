@@ -35,8 +35,8 @@ public class Signup {
         boolean validationStatus = false;
         String username = dto.getUsername();
         String email = dto.getEmail();
-        String password = dto.getPassword();
-        String confirmPassword = dto.getConfirmPassword();
+        char[] password = dto.getPassword();
+        char[] confirmPassword = dto.getConfirmPassword();
         if (!InputValidator.inputTextIsValid(username)) {
             return "Non-Exception:Employee user name is invalid";
         } else if (!InputValidator.inputEmailIsValid(email)) {
@@ -45,7 +45,7 @@ public class Signup {
             return "Non-Exception:This email already exists";
         } else if (!InputValidator.validPasswod(password)) {
             return "Non-Exception:Password is invalid";
-        } else if (!password.equals(confirmPassword)) {
+        } else if (!(InputValidator.areCharArraysEqual(password,confirmPassword))) {
             return "Non-Exception:Passwords don't match";
         } else {
             validationStatus = true;

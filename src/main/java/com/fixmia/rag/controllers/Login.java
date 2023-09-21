@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fixmia.rag.dtos.UserDTO;
+import com.fixmia.rag.dtos.UserDTO2;
 import com.fixmia.rag.entities.User;
 import com.fixmia.rag.util.InputValidator;
 import com.fixmia.rag.util.JwtUtil;
@@ -25,6 +26,7 @@ public class Login {
     @Inject
     private JwtUtil jwtUtil;
 
+
     @Path("/loginuser")
     @POST
     public Response post(UserDTO dto) {
@@ -33,9 +35,8 @@ public class Login {
         ArrayNode arrayNode = mapper.createArrayNode();
         ObjectNode objectNode = mapper.createObjectNode();
 
-
         String email = dto.getEmail();
-        String password = dto.getPassword();
+        char[] password = dto.getPassword();
         if (!InputValidator.inputEmailIsValid(email)) {
             objectNode.put("status", "Error");
             objectNode.put("message", "Email is invalid");
@@ -69,10 +70,8 @@ public class Login {
 
                 return Response.ok().entity(arrayNode).build();
 
-//                return ReturnMessage.successMessage("User is there");
             } else {
                 return Response.status(Response.Status.NOT_ACCEPTABLE).entity(arrayNode).build();
-//                return ReturnMessage.nonException("User couldn't be found");
             }
         }
         objectNode.put("status", "Error");

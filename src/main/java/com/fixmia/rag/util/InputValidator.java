@@ -1,5 +1,6 @@
 package com.fixmia.rag.util;
 
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,10 +44,22 @@ public class InputValidator {
         }
         return input.replaceAll("[^a-zA-Z0-9]", "");
     }
-    public static boolean validPasswod(String password){
-       Matcher matcher = PASSWORD_PATTERN.matcher(password);
+    public static boolean validPasswod(char[] password){
+       Matcher matcher = PASSWORD_PATTERN.matcher(new StringBuilder(Arrays.toString(password)));
        return matcher.matches();
     }
+    public static boolean areCharArraysEqual(char[] array1, char[] array2) {
+        if (array1.length != array2.length) {
+            return false; // If the arrays have different lengths, they can't be equal
+        }
 
+        for (int i = 0; i < array1.length; i++) {
+            if (array1[i] != array2[i]) {
+                return false; // If any character differs, the arrays are not equal
+            }
+        }
+
+        return true; // All characters matched, so the arrays are equal
+    }
 
 }

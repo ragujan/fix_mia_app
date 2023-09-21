@@ -3,8 +3,8 @@ package com.fixmia.rag.dtos;
 public class UserDTO {
       private String email;
       private String username;
-      private String password;
-      private String confirmPassword;
+      private char[] password;
+      private char[] confirmPassword;
 
     public String getEmail() {
         return email;
@@ -22,19 +22,19 @@ public class UserDTO {
         this.username = username;
     }
 
-    public String getPassword() {
+    public char[] getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(char[] password) {
         this.password = password;
     }
 
-    public String getConfirmPassword() {
+    public char[] getConfirmPassword() {
         return confirmPassword;
     }
 
-    public void setConfirmPassword(String confirmPassword) {
+    public void setConfirmPassword(char[] confirmPassword) {
         this.confirmPassword = confirmPassword;
     }
 }

@@ -13,7 +13,7 @@ public class User extends BaseEntity {
     private String username;
     private String contact;
 
-    private String password;
+    private char[] password;
 
 
     public Integer getId() {
@@ -44,11 +44,11 @@ public class User extends BaseEntity {
         this.contact = contact;
     }
 
-    public String getPassword() {
+    public char[] getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(char[] password) {
         this.password = password;
     }
 }
