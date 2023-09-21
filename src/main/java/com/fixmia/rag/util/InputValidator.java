@@ -45,7 +45,8 @@ public class InputValidator {
         return input.replaceAll("[^a-zA-Z0-9]", "");
     }
     public static boolean validPasswod(char[] password){
-       Matcher matcher = PASSWORD_PATTERN.matcher(new StringBuilder(Arrays.toString(password)));
+
+       Matcher matcher = PASSWORD_PATTERN.matcher(new StringBuilder(new String(password)));
        return matcher.matches();
     }
     public static boolean areCharArraysEqual(char[] array1, char[] array2) {

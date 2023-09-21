@@ -26,7 +26,6 @@ public class Login {
     @Inject
     private JwtUtil jwtUtil;
 
-
     @Path("/loginuser")
     @POST
     public Response post(UserDTO dto) {
@@ -71,6 +70,9 @@ public class Login {
                 return Response.ok().entity(arrayNode).build();
 
             } else {
+                objectNode.put("status", "failed");
+                objectNode.put("message", "user doesn't exist");
+                arrayNode.add(objectNode);
                 return Response.status(Response.Status.NOT_ACCEPTABLE).entity(arrayNode).build();
             }
         }
