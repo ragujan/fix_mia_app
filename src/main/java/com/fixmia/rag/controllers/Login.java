@@ -1,22 +1,23 @@
 package com.fixmia.rag.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fixmia.rag.dtos.UserDTO;
 import com.fixmia.rag.entities.User;
 import com.fixmia.rag.util.InputValidator;
 import com.fixmia.rag.util.JwtUtil;
-import com.fixmia.rag.util.ReturnMessage;
+import com.fixmia.rag.util.hibernate.LoadData;
 import com.fixmia.rag.util.hibernate.RowChecker;
-import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.server.mvc.Viewable;
 
 import com.fixmia.rag.annotations.IsUser;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.core.Context;
 
 @IsUser
 @Path("/")
@@ -26,14 +27,21 @@ public class Login {
 
     @Path("/loginuser")
     @POST
-    public String post(UserDTO dto) {
+    public Response post(UserDTO dto) {
+
+        ObjectMapper mapper = new ObjectMapper();
+        ArrayNode arrayNode = mapper.createArrayNode();
+        ObjectNode objectNode = mapper.createObjectNode();
+
 
         String email = dto.getEmail();
         String password = dto.getPassword();
         if (!InputValidator.inputEmailIsValid(email)) {
-            return ReturnMessage.nonException("Email is invalid");
+            objectNode.put("status", "Error");
+            objectNode.put("message", "Email is invalid");
         } else if (!InputValidator.validPasswod(password)) {
-            return ReturnMessage.nonException("Not a Valid Password");
+            objectNode.put("status", "Error");
+            objectNode.put("message", "Password is not valid");
         } else {
             RowChecker.addColumnNames("email", "password");
             RowChecker.addColumnValues(email, password);
@@ -41,14 +49,37 @@ public class Login {
 
                 UserDTO userDTO = new UserDTO();
                 userDTO.setEmail(email);
+                User user = LoadData.loadSingleData("User", "email", email);
                 String token = jwtUtil.generateAccessToken(userDTO);
                 String rfToken = jwtUtil.generateRefreshToken(userDTO);
+                Long expiresIn = jwtUtil.getExpirationTimeInSeconds(token);
 
-                return ReturnMessage.successMessage("User is there");
+                ObjectNode userDetails = mapper.createObjectNode();
+                userDetails.put("email", email);
+                objectNode.put("status", "success");
+                objectNode.put("message", "login success");
+                objectNode.put("access_token", token);
+                objectNode.put("refresh_token", rfToken);
+                objectNode.put("expires_in", expiresIn);
+                objectNode.put("token_type", "bearer");
+
+
+                objectNode.put("user", userDetails);
+                arrayNode.add(objectNode);
+
+                return Response.ok().entity(arrayNode).build();
+
+//                return ReturnMessage.successMessage("User is there");
             } else {
-                return ReturnMessage.nonException("User couldn't be found");
+                return Response.status(Response.Status.NOT_ACCEPTABLE).entity(arrayNode).build();
+//                return ReturnMessage.nonException("User couldn't be found");
             }
         }
+        objectNode.put("status", "Error");
+        objectNode.put("message", "Couldn't process the request");
+        arrayNode.add(objectNode);
+        return Response.status(Response.Status.NOT_ACCEPTABLE).entity(arrayNode).build();
+
     }
 
 

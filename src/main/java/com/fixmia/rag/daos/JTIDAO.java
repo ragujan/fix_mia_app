@@ -3,14 +3,14 @@ package com.fixmia.rag.daos;
 import com.fixmia.rag.entities.JTI;
 import com.fixmia.rag.util.hibernate.AddRow;
 import com.fixmia.rag.util.hibernate.DeleteRow;
-import com.fixmia.rag.util.hibernate.LoadTable;
+import com.fixmia.rag.util.hibernate.LoadData;
 
 import java.util.LinkedList;
 import java.util.List;
 
 public class JTIDAO {
     public List<JTI> getAll() {
-        List<Object[]> list = LoadTable.loadAll("JTI");
+        List<Object[]> list = LoadData.loadAll("JTI");
         List<JTI> jtiList = new LinkedList<>();
         if (list != null) {
 

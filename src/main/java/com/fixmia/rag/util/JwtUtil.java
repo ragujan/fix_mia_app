@@ -63,10 +63,15 @@ public class JwtUtil {
         }
         return claims;
     }
-    private Date getExpiredDateFromToken(String token){
+    public Date getExpiredDateFromToken(String token){
         Verifier verifier = HMACVerifier.newVerifier(SECRET);
         JWT jwt = JWT.getDecoder().decode(token,verifier);
         return new Date(jwt.expiration.toInstant().toEpochMilli());
+    }
+    public Long getExpirationTimeInSeconds(String token){
+        Date expiryDate = getExpiredDateFromToken(token);
+        Date currentDate = new Date();
+        return (expiryDate.getTime()-currentDate.getTime())/1000;
     }
     public boolean isTokenExpired(String token){
         Date expiryDate  = getExpiredDateFromToken(token);
