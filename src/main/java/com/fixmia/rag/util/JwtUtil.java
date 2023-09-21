@@ -20,6 +20,7 @@ public class JwtUtil {
     private static final String CLAIM_KEY_CREATED = "created";
     private static final String ISSUER = "fix_mia";
     private static final Long EXPIRATION_TIME = 30L;
+    private static final Long REFRESH_TOKEN_LIFE = 10080L;
     private static final String TYPE = "user-type";
     private static String SECRET = "";
     static {
@@ -62,7 +63,7 @@ public class JwtUtil {
         }
         return claims;
     }
-    public Date getExpiredDateFromToken(String token){
+    private Date getExpiredDateFromToken(String token){
         Verifier verifier = HMACVerifier.newVerifier(SECRET);
         JWT jwt = JWT.getDecoder().decode(token,verifier);
         return new Date(jwt.expiration.toInstant().toEpochMilli());
@@ -90,6 +91,12 @@ public class JwtUtil {
         boolean jtiExistsOnDb = isJTIValid(token);
 
         return userEmailExists && !tokenExpired && jtiExistsOnDb;
+    }
+    public String generateRefreshToken(UserDTO userDTO){
+        Map<String,String> claims = new HashMap<>();
+        claims.put(CLAIM_KEY_USERNAME,userDTO.getEmail());
+        claims.put(CLAIM_KEY_CREATED,new Date().toString());
+        return generateJWTToken(claims,userDTO.getEmail(),REFRESH_TOKEN_LIFE);
     }
     public static void main2(String[] args) {
         UserDTO user = new UserDTO();

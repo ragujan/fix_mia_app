@@ -13,6 +13,7 @@ public class AppConfig extends ResourceConfig {
         packages(PackageLists.FILTER.getPackageName());
         register(CORSFilter.class);
         register(JspMvcFeature.class);
+        register(DependencyBinder.class);
         property(JspMvcFeature.TEMPLATE_BASE_PATH,"/WEB-INF/Views");
         System.out.println("app is configured ");
 
