@@ -13,50 +13,59 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 
 public class Encryption {
-    public static String encrypt1(String source) {
-        String md5 = "";
 
+    public static boolean verifyPassword(char[] passwordChar,String salt,String hashedPassword){
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i <passwordChar.length ; i++) {
+            stringBuilder.append(passwordChar[i]);
+        }
+        String generatedPassword = null;
         try {
-            MessageDigest digest = MessageDigest.getInstance("MD5");
-            digest.update(source.getBytes(), 0, source.length());
-            BigInteger integer = new BigInteger(1, digest.digest());
-            md5 = integer.toString(16);
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            MessageDigest md = MessageDigest.getInstance("SHA-512");
+            md.update(salt.getBytes());
+            byte[] bytes = md.digest(stringBuilder.toString().getBytes());
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < bytes.length; i++) {
+                sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16)
+                        .substring(1));
+            }
+            generatedPassword = sb.toString();
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
         }
-        return md5;
-
+        return generatedPassword.equals(hashedPassword);
     }
-
-    public static String encrypt(char[] source) throws NoSuchAlgorithmException {
-        return DigestUtils.sha512Hex(new String(source));
+    public static String get_SHA_512_SecurePassword(String passwordToHash,
+                                                     String salt) {
+        String generatedPassword = null;
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-512");
+            md.update(salt.getBytes());
+            byte[] bytes = md.digest(passwordToHash.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < bytes.length; i++) {
+                sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16)
+                        .substring(1));
+            }
+            generatedPassword = sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return generatedPassword;
     }
-
-    public static byte[] encrypt2(char[] passwordByte) throws NoSuchAlgorithmException, InvalidKeySpecException {
-
-        SecureRandom random = new SecureRandom();
+   public static String get_SHA_512_SecurePassword(char[] passwordChar, String salt){
+        StringBuilder stringBuilder = new StringBuilder();
+       for (int i = 0; i <passwordChar.length ; i++) {
+          stringBuilder.append(passwordChar[i]);
+       }
+       return get_SHA_512_SecurePassword(stringBuilder.toString(),salt);
+   }
+    // Add salt
+    public static String getSalt() throws NoSuchAlgorithmException {
+        SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
         byte[] salt = new byte[16];
-        random.nextBytes(salt);
-        System.out.println(random.toString());
-        KeySpec spec = new PBEKeySpec(new String(passwordByte).toCharArray(), salt, 65536, 128);
-        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-        byte[] hash = factory.generateSecret(spec).getEncoded();
-        System.out.println(hash);
-        return hash;
-    }
-
-    public static void main(String[] args) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        char[] charPwd1 = new char[]{'p', 'a', 's', 's', 'w', 'o', 'r', 'd'};
-        char[] charPwd2 = new char[]{'b', 'a', 'a', '4', 'r', '3', 'e', 'd'};
-//        System.out.println(encrypt(charPwd));
-        encrypt2(charPwd1);
-        byte[] bytes = encrypt2(charPwd2);
-        char[] ch = new char[bytes.length];
-        for (int i = 0; i <bytes.length ; i++) {
-            ch[i] = (char) (bytes[i] & 0xFF);
-        }
-        System.out.println("byte array is "+bytes);
-        System.out.println("char array is "+ch);
-
+        sr.nextBytes(salt);
+        return salt.toString();
     }
 }

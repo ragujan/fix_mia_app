@@ -3,6 +3,7 @@ package com.fixmia.rag.controllers;
 import com.fixmia.rag.annotations.IsUser;
 import com.fixmia.rag.dtos.UserDTO;
 import com.fixmia.rag.entities.User;
+import com.fixmia.rag.util.Encryption;
 import com.fixmia.rag.util.InputValidator;
 import com.fixmia.rag.util.ReturnMessage;
 import com.fixmia.rag.util.hibernate.AddRow;
@@ -13,6 +14,9 @@ import jakarta.ws.rs.core.MediaType;
 import org.glassfish.jersey.server.mvc.Viewable;
 
 import jakarta.servlet.http.HttpServletRequest;
+
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 @IsUser
 @Path("/")
@@ -30,7 +34,7 @@ public class Signup {
     @POST
     @Path("/signupuser")
     @Consumes(MediaType.APPLICATION_JSON)
-    public String post(UserDTO dto) {
+    public String post(UserDTO dto) throws NoSuchAlgorithmException {
         boolean signupStatus = false;
         boolean validationStatus = false;
         String username = dto.getUsername();
@@ -41,20 +45,34 @@ public class Signup {
             return "Non-Exception:Employee user name is invalid";
         } else if (!InputValidator.inputEmailIsValid(email)) {
             return "Non-Exception:User email is invalid";
-        } else if ( RowChecker.rowExists("User", "email", email)) {
+        } else if (RowChecker.rowExists("User", "email", email)) {
             return "Non-Exception:This email already exists";
-        } else if (!InputValidator.validPasswod(password)) {
+        } else if (!InputValidator.validPasswod(Arrays.toString(password))) {
             return "Non-Exception:Password is invalid";
-        } else if (!(InputValidator.areCharArraysEqual(password,confirmPassword))) {
+        } else if (!(InputValidator.areCharArraysEqual(password, confirmPassword))) {
             return "Non-Exception:Passwords don't match";
         } else {
             validationStatus = true;
         }
         if (validationStatus) {
+
+//            password salt
+            String hashedPassword = "";
+            String salt = "";
+            salt = Encryption.getSalt();
+            hashedPassword = Encryption.get_SHA_512_SecurePassword(password, salt);
+            System.out.println("hashed password is "+hashedPassword);
+            System.out.println("password is  "+Arrays.toString(password));
+            System.out.println("salt is "+salt);
+            password = null;
+            confirmPassword = null;
+
+
             User user = new User();
+            user.setPassword(hashedPassword);
+            user.setSalt(salt);
             user.setEmail(email);
             user.setUsername(username);
-            user.setPassword(password);
             boolean addRowStatus = AddRow.addRow(user);
 
             if (addRowStatus) {

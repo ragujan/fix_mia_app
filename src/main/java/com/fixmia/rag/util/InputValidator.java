@@ -1,6 +1,5 @@
 package com.fixmia.rag.util;
 
-import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,9 +43,9 @@ public class InputValidator {
         }
         return input.replaceAll("[^a-zA-Z0-9]", "");
     }
-    public static boolean validPasswod(char[] password){
+    public static boolean validPasswod(String password){
 
-       Matcher matcher = PASSWORD_PATTERN.matcher(new StringBuilder(new String(password)));
+       Matcher matcher = PASSWORD_PATTERN.matcher(password);
        return matcher.matches();
     }
     public static boolean areCharArraysEqual(char[] array1, char[] array2) {
