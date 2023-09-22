@@ -31,7 +31,6 @@ public class Login {
     @Path("/loginuser")
     @POST
     public Response post(UserDTO dto) {
-
         ObjectMapper mapper = new ObjectMapper();
         ArrayNode arrayNode = mapper.createArrayNode();
         ObjectNode objectNode = mapper.createObjectNode();
@@ -41,7 +40,7 @@ public class Login {
         if (!InputValidator.inputEmailIsValid(email)) {
             objectNode.put("status", "Error");
             objectNode.put("message", "Email is invalid");
-        } else if (!InputValidator.validPasswod(Arrays.toString(password))) {
+        } else if (!InputValidator.validPasswod(password)) {
             objectNode.put("status", "Error");
             objectNode.put("message", "Password is not valid");
         } else {

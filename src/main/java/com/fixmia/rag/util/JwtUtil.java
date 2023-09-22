@@ -30,7 +30,7 @@ public class JwtUtil {
     public String generateJWTToken(Map<String,String> claims, String subject, Long expiration){
         Signer signer = HMACSigner.newSHA512Signer(SECRET);
         JWT jwt = new JWT()
-                .setExpiration(ZonedDateTime.now(ZoneOffset.UTC).plusMinutes(EXPIRATION_TIME))
+                .setExpiration(ZonedDateTime.now(ZoneOffset.UTC).plusMinutes(expiration))
                 .setIssuedAt(ZonedDateTime.now(ZoneOffset.UTC))
                 .setIssuer(ISSUER)
                 .setSubject(subject);
@@ -102,28 +102,6 @@ public class JwtUtil {
         claims.put(CLAIM_KEY_USERNAME,userDTO.getEmail());
         claims.put(CLAIM_KEY_CREATED,new Date().toString());
         return generateJWTToken(claims,userDTO.getEmail(),REFRESH_TOKEN_LIFE);
-    }
-    public static void main2(String[] args) {
-        UserDTO user = new UserDTO();
-        user.setEmail("brobash@gmail.com");
-        JwtUtil jwtUtil = new JwtUtil();
-        String token = jwtUtil.generateAccessToken(user);
-        System.out.println("token");
-        System.out.println(token);
-
-        token = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTUyNTUzMzksImlhdCI6MTY5NTI1MzUzOSwiaXNzIjoiZml4X21pYSIsInN1YiI6ImJyb2Jhc2hAZ21haWwuY29tIiwianRpIjoiZWUxcnA3QmZzQyIsImNyZWF0ZWQiOiJUaHUgU2VwIDIxIDA1OjE1OjM5IElTVCAyMDIzIn0.C0EqaiNSc3Dxb-O6K_IsRGObAaM96Oc88BfVQzuZ9y3-4w_P51sQsf4CbDlnCmzL_3Ppo7u5WM2l3DKX62dW4Q";
-        String jti = "ee1rp7BfsC";
-        Map<String,String> claims = jwtUtil.getClaimsFromToken(token);
-        claims.forEach((k,v)->{
-            System.out.println(claims.get(k));
-        });
-        System.out.println("Expiration is on ");
-        System.out.println(jwtUtil.getExpiredDateFromToken(token).toString());
-        jwtUtil.isJTIValid(token);
-        System.out.println("Is token valid ?");
-        System.out.println(jwtUtil.validateToken(token,user));
-
-
     }
 
 }

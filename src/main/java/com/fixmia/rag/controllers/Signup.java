@@ -47,7 +47,7 @@ public class Signup {
             return "Non-Exception:User email is invalid";
         } else if (RowChecker.rowExists("User", "email", email)) {
             return "Non-Exception:This email already exists";
-        } else if (!InputValidator.validPasswod(Arrays.toString(password))) {
+        } else if (!InputValidator.validPasswod(password)) {
             return "Non-Exception:Password is invalid";
         } else if (!(InputValidator.areCharArraysEqual(password, confirmPassword))) {
             return "Non-Exception:Passwords don't match";
