@@ -2,6 +2,7 @@ package com.fixmia.rag.util;
 
 import com.fixmia.rag.dtos.UserDTO;
 import com.fixmia.rag.services.JTIService;
+import io.fusionauth.jwt.InvalidJWTException;
 import io.fusionauth.jwt.Signer;
 import io.fusionauth.jwt.Verifier;
 import io.fusionauth.jwt.domain.JWT;
@@ -23,85 +24,107 @@ public class JwtUtil {
     private static final Long REFRESH_TOKEN_LIFE = 10080L;
     private static final String TYPE = "user-type";
     private static String SECRET = "";
+
     static {
         Dotenv dotenv = Dotenv.configure().ignoreIfMalformed().load();
         SECRET = dotenv.get("PRIVATE_SECRET_JWT_KEY");
     }
-    public String generateJWTToken(Map<String,String> claims, String subject, Long expiration){
+
+    public String generateJWTToken(Map<String, String> claims, String subject, Long expiration) {
         Signer signer = HMACSigner.newSHA512Signer(SECRET);
         JWT jwt = new JWT()
                 .setExpiration(ZonedDateTime.now(ZoneOffset.UTC).plusMinutes(expiration))
                 .setIssuedAt(ZonedDateTime.now(ZoneOffset.UTC))
                 .setIssuer(ISSUER)
                 .setSubject(subject);
-        claims.keySet().forEach(k->{
-            if(claims.get(k) != null){
-                jwt.addClaim(k,claims.get(k));
+        claims.keySet().forEach(k -> {
+            if (claims.get(k) != null) {
+                jwt.addClaim(k, claims.get(k));
             }
         });
         String jti = JTIService.generateJTI();
         jwt.addClaim("jti", jti);
-        return JWT.getEncoder().encode(jwt,signer);
+        return JWT.getEncoder().encode(jwt, signer);
     }
-    public  String generateAccessToken(UserDTO user){
-        Map<String,String> claims = new HashMap<>();
-        claims.put(CLAIM_KEY_USERNAME,user.getEmail());
-        claims.put(CLAIM_KEY_CREATED,new Date().toString());
-        return generateJWTToken(claims,user.getEmail(),EXPIRATION_TIME);
+
+    public String generateAccessToken(UserDTO user) {
+        Map<String, String> claims = new HashMap<>();
+        claims.put(CLAIM_KEY_USERNAME, user.getEmail());
+        claims.put(CLAIM_KEY_CREATED, new Date().toString());
+        return generateJWTToken(claims, user.getEmail(), EXPIRATION_TIME);
 
     }
-    public Map<String,String> getClaimsFromToken(String token){
+
+    public JWT maybeToken(String token) {
+
+        try {
+            Verifier verifier = HMACVerifier.newVerifier(SECRET);
+            JWT jwt = JWT.getDecoder().decode(token, verifier);
+            return jwt;
+        }catch (InvalidJWTException ex){
+            System.out.println("this is not a json token at all");
+        }
+        return null;
+    }
+
+    public Map<String, String> getClaimsFromToken(String token) {
         Verifier verifier = HMACVerifier.newVerifier(SECRET);
-        JWT jwt = JWT.getDecoder().decode(token,verifier);
-        Map<String,Object> jwtAllClaims = jwt.getAllClaims();
-        Map<String,String> claims = new HashMap<>();
+        JWT jwt = JWT.getDecoder().decode(token, verifier);
+        Map<String, Object> jwtAllClaims = jwt.getAllClaims();
+        Map<String, String> claims = new HashMap<>();
 
-        if(jwt != null){
-            jwtAllClaims.forEach((k,v)->{
-                claims.put(k,v.toString());
+        if (jwt != null) {
+            jwtAllClaims.forEach((k, v) -> {
+                claims.put(k, v.toString());
             });
         }
         return claims;
     }
-    public Date getExpiredDateFromToken(String token){
+
+    public Date getExpiredDateFromToken(String token) {
         Verifier verifier = HMACVerifier.newVerifier(SECRET);
-        JWT jwt = JWT.getDecoder().decode(token,verifier);
+        JWT jwt = JWT.getDecoder().decode(token, verifier);
         return new Date(jwt.expiration.toInstant().toEpochMilli());
     }
-    public Long getExpirationTimeInSeconds(String token){
+
+    public Long getExpirationTimeInSeconds(String token) {
         Date expiryDate = getExpiredDateFromToken(token);
         Date currentDate = new Date();
-        return (expiryDate.getTime()-currentDate.getTime())/1000;
+        return (expiryDate.getTime() - currentDate.getTime()) / 1000;
     }
-    public boolean isTokenExpired(String token){
-        Date expiryDate  = getExpiredDateFromToken(token);
+
+    public boolean isTokenExpired(String token) {
+        Date expiryDate = getExpiredDateFromToken(token);
         return expiryDate.before(new Date(System.currentTimeMillis()));
     }
-    public String getUserEmailFromToken(String token){
-        Map<String,String> claims = getClaimsFromToken(token);
+
+    public String getUserEmailFromToken(String token) {
+        Map<String, String> claims = getClaimsFromToken(token);
         return claims.get(CLAIM_KEY_USERNAME);
     }
-    public boolean isJTIValid (String token){
 
-        Map<String,String> claims = getClaimsFromToken(token);
+    public boolean isJTIValid(String token) {
+
+        Map<String, String> claims = getClaimsFromToken(token);
         String jti = claims.get("jti");
-        System.out.println("jti is "+jti);
+        System.out.println("jti is " + jti);
         boolean jtiExistsOnDb = JTIService.isJTIExists(jti);
         return jtiExistsOnDb;
     }
-    public boolean validateToken(String token,UserDTO userDTO){
+
+    public boolean validateToken(String token) {
         String userEmail = getUserEmailFromToken(token);
-        boolean userEmailExists = userEmail.equals(userDTO.getEmail());
         boolean tokenExpired = isTokenExpired(token);
         boolean jtiExistsOnDb = isJTIValid(token);
 
-        return userEmailExists && !tokenExpired && jtiExistsOnDb;
+        return !tokenExpired && jtiExistsOnDb;
     }
-    public String generateRefreshToken(UserDTO userDTO){
-        Map<String,String> claims = new HashMap<>();
-        claims.put(CLAIM_KEY_USERNAME,userDTO.getEmail());
-        claims.put(CLAIM_KEY_CREATED,new Date().toString());
-        return generateJWTToken(claims,userDTO.getEmail(),REFRESH_TOKEN_LIFE);
+
+    public String generateRefreshToken(UserDTO userDTO) {
+        Map<String, String> claims = new HashMap<>();
+        claims.put(CLAIM_KEY_USERNAME, userDTO.getEmail());
+        claims.put(CLAIM_KEY_CREATED, new Date().toString());
+        return generateJWTToken(claims, userDTO.getEmail(), REFRESH_TOKEN_LIFE);
     }
 
 }

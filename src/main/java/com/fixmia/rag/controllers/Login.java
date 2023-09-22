@@ -11,14 +11,12 @@ import com.fixmia.rag.util.JwtUtil;
 import com.fixmia.rag.util.hibernate.LoadData;
 import com.fixmia.rag.util.hibernate.RowChecker;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.server.mvc.Viewable;
 
 import com.fixmia.rag.annotations.IsUser;
-
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
 
 import java.util.Arrays;
 
@@ -30,11 +28,13 @@ public class Login {
 
     @Path("/loginuser")
     @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response post(UserDTO dto) {
         ObjectMapper mapper = new ObjectMapper();
         ArrayNode arrayNode = mapper.createArrayNode();
         ObjectNode objectNode = mapper.createObjectNode();
-
+        System.out.println("came here ");
         String email = dto.getEmail();
         char[] password = dto.getPassword();
         if (!InputValidator.inputEmailIsValid(email)) {
@@ -71,6 +71,7 @@ public class Login {
 
                     objectNode.put("user", userDetails);
                     arrayNode.add(objectNode);
+                    System.out.println("ok success");
                     return Response.ok().entity(arrayNode).build();
                 }else{
                     System.out.println("User is not there");
@@ -87,6 +88,7 @@ public class Login {
                 return Response.status(Response.Status.NOT_ACCEPTABLE).entity(arrayNode).build();
             }
         }
+        System.out.println("came after the everything hahah");
         objectNode.put("status", "Error");
         objectNode.put("message", "Couldn't process the request");
         arrayNode.add(objectNode);
