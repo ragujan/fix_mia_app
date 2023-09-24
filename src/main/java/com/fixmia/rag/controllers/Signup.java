@@ -3,6 +3,7 @@ package com.fixmia.rag.controllers;
 import com.fixmia.rag.annotations.IsUser;
 import com.fixmia.rag.dtos.UserDTO;
 import com.fixmia.rag.entities.User;
+import com.fixmia.rag.entities.UserType;
 import com.fixmia.rag.util.Encryption;
 import com.fixmia.rag.util.InputValidator;
 import com.fixmia.rag.util.ReturnMessage;
@@ -67,12 +68,15 @@ public class Signup {
             password = null;
             confirmPassword = null;
 
+            UserType userType = new UserType();
+            userType.setId(1);
 
             User user = new User();
             user.setPassword(hashedPassword);
             user.setSalt(salt);
             user.setEmail(email);
             user.setUsername(username);
+            user.setUserType(userType);
             boolean addRowStatus = AddRow.addRow(user);
 
             if (addRowStatus) {

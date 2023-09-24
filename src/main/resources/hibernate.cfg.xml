@@ -14,5 +14,6 @@
     <mapping class="com.fixmia.rag.entities.User"/>
     <mapping class="com.fixmia.rag.entities.BaseEntity"/>
     <mapping class="com.fixmia.rag.entities.JTI"/>
+    <mapping class="com.fixmia.rag.entities.UserType"/>
   </session-factory>
 </hibernate-configuration>

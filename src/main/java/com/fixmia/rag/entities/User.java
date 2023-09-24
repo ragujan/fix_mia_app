@@ -12,6 +12,17 @@ public class User extends BaseEntity {
     private String email;
     private String username;
     private String contact;
+    @ManyToOne
+    @JoinColumn(name = "user_type_id")
+    private UserType userType;
+
+    public UserType getUserType() {
+        return userType;
+    }
+
+    public void setUserType(UserType userType) {
+        this.userType = userType;
+    }
 
     public void setId(Integer id) {
         this.id = id;
@@ -20,6 +31,7 @@ public class User extends BaseEntity {
     private String password;
 
     private String salt;
+
     public String getSalt() {
         return salt;
     }
@@ -27,7 +39,6 @@ public class User extends BaseEntity {
     public void setSalt(String salt) {
         this.salt = salt;
     }
-
 
 
     public Integer getId() {

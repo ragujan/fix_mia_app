@@ -93,9 +93,5 @@ public class GoogleAuth {
         return idToken;
     }
 
-    public static void main(String[] args) {
-        Dotenv dotenv = Dotenv.configure().ignoreIfMalformed().load();
-        System.out.println(dotenv.get("PRIVATE_SECRET_JWT_KEY"));
-    }
 
 }
