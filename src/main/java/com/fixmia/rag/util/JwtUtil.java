@@ -47,10 +47,11 @@ public class JwtUtil {
         return JWT.getEncoder().encode(jwt, signer);
     }
 
-    public String generateAccessToken(UserDTO user) {
+    public String generateAccessTokenForUser(UserDTO user) {
         Map<String, String> claims = new HashMap<>();
         claims.put(CLAIM_KEY_USERNAME, user.getEmail());
         claims.put(CLAIM_KEY_CREATED, new Date().toString());
+        claims.put(TYPE,"user");
         return generateJWTToken(claims, user.getEmail(), EXPIRATION_TIME);
 
     }
@@ -120,10 +121,11 @@ public class JwtUtil {
         return !tokenExpired && jtiExistsOnDb;
     }
 
-    public String generateRefreshToken(UserDTO userDTO) {
+    public String generateRefreshTokenForUser(UserDTO userDTO) {
         Map<String, String> claims = new HashMap<>();
         claims.put(CLAIM_KEY_USERNAME, userDTO.getEmail());
         claims.put(CLAIM_KEY_CREATED, new Date().toString());
+        claims.put(TYPE,"user");
         return generateJWTToken(claims, userDTO.getEmail(), REFRESH_TOKEN_LIFE);
     }
 

@@ -57,8 +57,8 @@ public class GoogleAuth {
 
                 UserDTO userDTO = new UserDTO();
                 userDTO.setEmail(email);
-                String token = jwtUtil.generateAccessToken(userDTO);
-                String rfToken = jwtUtil.generateRefreshToken(userDTO);
+                String token = jwtUtil.generateAccessTokenForUser(userDTO);
+                String rfToken = jwtUtil.generateRefreshTokenForUser(userDTO);
                 Long expiresIn = jwtUtil.getExpirationTimeInSeconds(token);
 
                 ObjectNode userDetails = mapper.createObjectNode();
