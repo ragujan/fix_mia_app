@@ -16,5 +16,8 @@ public class ViewController {
     public Viewable signupView() {
         return new Viewable("/frontend/signup");
     }
-
+    @GET
+    public Viewable homeView(){
+        return new Viewable("/homepage");
+    }
 }

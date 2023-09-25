@@ -27,7 +27,7 @@ import java.security.GeneralSecurityException;
 import java.util.Collections;
 
 @Path("/")
-public class GoogleAuth {
+public class GoogleAuthController {
 
     @Inject
     private JwtUtil jwtUtil;
