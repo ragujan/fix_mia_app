@@ -6,7 +6,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 @IsGoogleApiRequest
 @Path("/")
-public class ClientAPI {
+public class GoogleClientIdAPI {
     @GET
     @Path("/googleapi")
     public String getGoogleApi() {
