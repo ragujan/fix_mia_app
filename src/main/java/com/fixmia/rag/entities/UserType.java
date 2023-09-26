@@ -14,6 +14,11 @@ public class UserType {
     @Column(name = "user_type_name")
     private String userTypeName;
 
+    @Column(name = "code")
+    private String code;
+
+
+
     @OneToMany(mappedBy = "userType")
     private Set<User> users = new HashSet<>();
 
@@ -39,5 +44,12 @@ public class UserType {
 
     public void setUsers(Set<User> users) {
         this.users = users;
+    }
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }

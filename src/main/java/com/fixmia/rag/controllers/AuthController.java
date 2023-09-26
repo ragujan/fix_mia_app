@@ -15,6 +15,7 @@ import com.fixmia.rag.util.hibernate.AddRow;
 import com.fixmia.rag.util.hibernate.LoadData;
 import com.fixmia.rag.util.hibernate.RowChecker;
 import io.fusionauth.jwt.domain.JWT;
+import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -56,12 +57,13 @@ public class AuthController {
                 String hashedPassword = user.getPassword();
 
                 if (Encryption.verifyPassword(password, salt, hashedPassword)) {
-                    System.out.println("user is confirmed ");
                     UserDTO userDTO = new UserDTO();
                     userDTO.setEmail(email);
                     String token = jwtUtil.generateAccessTokenForUser(userDTO);
                     String rfToken = jwtUtil.generateRefreshTokenForUser(userDTO);
                     Long expiresIn = jwtUtil.getExpirationTimeInSeconds(token);
+
+                    Dotenv dotenv = Dotenv.load();
 
                     ObjectNode userDetails = mapper.createObjectNode();
                     userDetails.put("email", email);
@@ -72,12 +74,15 @@ public class AuthController {
                     objectNode.put("expires_in", expiresIn);
                     objectNode.put("token_type", "bearer");
                     objectNode.put("user", userDetails);
+                    UserType userType = (UserType) LoadData.loadSingleData("UserType", "id", 1);
+                    String userTypeCode = userType.getCode();
+
+                    objectNode.put("user-type", userTypeCode);
 
                     arrayNode.add(objectNode);
                     System.out.println("ok success");
                     return Response.ok().entity(arrayNode).build();
                 } else {
-                    System.out.println("User is not there");
                     objectNode.put("status", "failed");
                     objectNode.put("message", "Wrong password");
                     arrayNode.add(objectNode);
@@ -91,13 +96,13 @@ public class AuthController {
                 return Response.status(Response.Status.NOT_ACCEPTABLE).entity(arrayNode).build();
             }
         }
-        System.out.println("came after the everything hahah");
         objectNode.put("status", "Error");
         objectNode.put("message", "Couldn't process the request");
         arrayNode.add(objectNode);
         return Response.status(Response.Status.NOT_ACCEPTABLE).entity(arrayNode).build();
 
     }
+
     @Path("/refresh-token")
     @POST
     @Produces(MediaType.APPLICATION_JSON)
@@ -105,11 +110,7 @@ public class AuthController {
         ObjectMapper mapper = new ObjectMapper();
         ArrayNode arrayNode = mapper.createArrayNode();
         ObjectNode objectNode = mapper.createObjectNode();
-        System.out.println("token is received " + refreshToken);
         JWT jwt = jwtUtil.maybeToken(refreshToken);
-        System.out.println("checking a expired jwt ");
-        String expiredJWTToken = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTU2OTA0NDcsImlhdCI6MTY5NTY5MDM4NywiaXNzIjoiZml4X21pYSIsInN1YiI6ImJhc29uQGdtYWlsLmNvbSIsImp0aSI6ImJBT1IwMXJTQmkiLCJ1c2VyLXR5cGUiOiJ1c2VyIiwiY3JlYXRlZCI6IlR1ZSBTZXAgMjYgMDY6MzY6MjcgSVNUIDIwMjMifQ.7LX1QfKrahy0q-pBLrUQdyvsBatNMOXt6F8avm7tHuITYD_FQu8Eui87L741ogQqmgVJgnTobWXSGAKGywWddA";
-        System.out.println(jwtUtil.isTokenExpired(expiredJWTToken));
         if (jwt != null) {
 
             System.out.println("token valid is " + jwtUtil.isTokenValid(refreshToken));
@@ -122,6 +123,8 @@ public class AuthController {
                 String newAccessToken = jwtUtil.generateAccessTokenForUser(userDTO);
                 Long expiresIn = jwtUtil.getExpirationTimeInSeconds(newAccessToken);
 
+                Dotenv dotenv = Dotenv.load();
+
                 ObjectNode userDetails = mapper.createObjectNode();
                 userDetails.put("email", email);
                 objectNode.put("status", "success");
@@ -131,8 +134,12 @@ public class AuthController {
                 objectNode.put("expires_in", expiresIn);
                 objectNode.put("token_type", "bearer");
                 objectNode.put("user", userDetails);
+
+                UserType userType = (UserType) LoadData.loadSingleData("UserType", "id", 1);
+                String userTypeCode = userType.getCode();
+
+                objectNode.put("user-type", userTypeCode);
                 arrayNode.add(objectNode);
-                System.out.println("ok success jwt refresh process");
                 return Response.ok().entity(arrayNode).build();
             } else {
                 objectNode.put("status", "Error");

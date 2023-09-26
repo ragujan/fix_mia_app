@@ -3,6 +3,7 @@ package com.fixmia.rag.middleware;
 
 import com.fixmia.rag.annotations.IsUser;
 import com.fixmia.rag.util.JwtUtil;
+import com.fixmia.rag.util.SeparateToken;
 import com.fixmia.rag.util.hibernate.RowChecker;
 import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.annotation.Priority;
@@ -19,9 +20,8 @@ import jakarta.ws.rs.ext.Provider;
 import java.io.IOException;
 
 @Provider
-@IsUser
 //@PreMatching
-@Priority(1)
+@Priority(2)
 public class UserValidation implements ContainerRequestFilter {
     @Context
     HttpServletRequest request;
@@ -35,6 +35,7 @@ public class UserValidation implements ContainerRequestFilter {
     public void filter(ContainerRequestContext containerRequestContext) throws IOException {
 
         String path = containerRequestContext.getUriInfo().getPath();
+        System.out.println("Path is "+path);
         Dotenv dotenv = Dotenv.load();
         String allowedOrigin = dotenv.get("ALLOWED_ORIGIN");
 
@@ -66,6 +67,20 @@ public class UserValidation implements ContainerRequestFilter {
                 }
             }
 
+        }
+
+        if(path.equals("testpage")){
+            if (containerRequestContext.getHeaders().getFirst(HttpHeaders.AUTHORIZATION) == null) {
+                System.out.println("came here");
+                containerRequestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).entity("Unauthorized request").build());
+
+            }else {
+                System.out.println("token is "+ SeparateToken.separate(containerRequestContext));
+                String token = SeparateToken.separate(containerRequestContext);
+                if(jwtUtil.maybeToken(token) == null){
+                    containerRequestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).entity("Unauthorized request").build());
+                }
+            }
         }
 
 
