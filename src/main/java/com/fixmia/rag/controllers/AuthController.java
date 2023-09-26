@@ -14,6 +14,7 @@ import com.fixmia.rag.util.ReturnMessage;
 import com.fixmia.rag.util.hibernate.AddRow;
 import com.fixmia.rag.util.hibernate.LoadData;
 import com.fixmia.rag.util.hibernate.RowChecker;
+import io.fusionauth.jwt.domain.JWT;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -22,6 +23,7 @@ import org.glassfish.jersey.server.mvc.Viewable;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+
 @IsUser
 @Path("/")
 public class AuthController {
@@ -69,9 +71,8 @@ public class AuthController {
                     objectNode.put("refresh_token", rfToken);
                     objectNode.put("expires_in", expiresIn);
                     objectNode.put("token_type", "bearer");
-
-
                     objectNode.put("user", userDetails);
+
                     arrayNode.add(objectNode);
                     System.out.println("ok success");
                     return Response.ok().entity(arrayNode).build();
@@ -97,6 +98,58 @@ public class AuthController {
         return Response.status(Response.Status.NOT_ACCEPTABLE).entity(arrayNode).build();
 
     }
+    @Path("/refresh-token")
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response refreshTokenTest(@FormParam("token") String refreshToken) {
+        ObjectMapper mapper = new ObjectMapper();
+        ArrayNode arrayNode = mapper.createArrayNode();
+        ObjectNode objectNode = mapper.createObjectNode();
+        System.out.println("token is received " + refreshToken);
+        JWT jwt = jwtUtil.maybeToken(refreshToken);
+        System.out.println("checking a expired jwt ");
+        String expiredJWTToken = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTU2OTA0NDcsImlhdCI6MTY5NTY5MDM4NywiaXNzIjoiZml4X21pYSIsInN1YiI6ImJhc29uQGdtYWlsLmNvbSIsImp0aSI6ImJBT1IwMXJTQmkiLCJ1c2VyLXR5cGUiOiJ1c2VyIiwiY3JlYXRlZCI6IlR1ZSBTZXAgMjYgMDY6MzY6MjcgSVNUIDIwMjMifQ.7LX1QfKrahy0q-pBLrUQdyvsBatNMOXt6F8avm7tHuITYD_FQu8Eui87L741ogQqmgVJgnTobWXSGAKGywWddA";
+        System.out.println(jwtUtil.isTokenExpired(expiredJWTToken));
+        if (jwt != null) {
+
+            System.out.println("token valid is " + jwtUtil.isTokenValid(refreshToken));
+            if (jwtUtil.isTokenValid(refreshToken)) {
+
+
+                String email = jwtUtil.getUserEmailFromToken(refreshToken);
+                UserDTO userDTO = new UserDTO();
+                userDTO.setEmail(email);
+                String newAccessToken = jwtUtil.generateAccessTokenForUser(userDTO);
+                Long expiresIn = jwtUtil.getExpirationTimeInSeconds(newAccessToken);
+
+                ObjectNode userDetails = mapper.createObjectNode();
+                userDetails.put("email", email);
+                objectNode.put("status", "success");
+                objectNode.put("message", "login success");
+                objectNode.put("access_token", newAccessToken);
+                objectNode.put("refresh_token", refreshToken);
+                objectNode.put("expires_in", expiresIn);
+                objectNode.put("token_type", "bearer");
+                objectNode.put("user", userDetails);
+                arrayNode.add(objectNode);
+                System.out.println("ok success jwt refresh process");
+                return Response.ok().entity(arrayNode).build();
+            } else {
+                objectNode.put("status", "Error");
+                objectNode.put("message", "Invalid Refresh Token");
+                arrayNode.add(objectNode);
+                return Response.status(Response.Status.NOT_ACCEPTABLE).entity(arrayNode).build();
+
+            }
+        } else {
+            objectNode.put("status", "Error");
+            objectNode.put("message", "Invalid Refresh Token");
+            arrayNode.add(objectNode);
+            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(arrayNode).build();
+        }
+
+    }
+
     @POST
     @Path("/signupuser")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -153,5 +206,6 @@ public class AuthController {
             return ReturnMessage.nonException("Couldn't validate inputs sorry");
         }
     }
+
 
 }

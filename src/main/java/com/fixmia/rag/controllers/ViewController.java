@@ -3,7 +3,7 @@ package com.fixmia.rag.controllers;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import org.glassfish.jersey.server.mvc.Viewable;
-
+@Path("/")
 public class ViewController {
     @GET
     @Path("/login")
@@ -17,6 +17,7 @@ public class ViewController {
         return new Viewable("/frontend/signup");
     }
     @GET
+    @Path("/")
     public Viewable homeView(){
         return new Viewable("/homepage");
     }

@@ -53,7 +53,7 @@ public class UserValidation implements ContainerRequestFilter {
 
                     String email = jwtUtil.getUserEmailFromToken(token);
                     boolean emailExists = RowChecker.rowExists("User", "email", email);
-                    boolean isTokenValid = jwtUtil.validateToken(token);
+                    boolean isTokenValid = jwtUtil.isTokenValid(token);
 
                     if (emailExists && isTokenValid) {
                         System.out.println("This token is valid");
