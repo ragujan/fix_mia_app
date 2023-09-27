@@ -7,10 +7,7 @@ import com.fixmia.rag.annotations.IsUser;
 import com.fixmia.rag.dtos.UserDTO;
 import com.fixmia.rag.entities.User;
 import com.fixmia.rag.entities.UserType;
-import com.fixmia.rag.util.Encryption;
-import com.fixmia.rag.util.InputValidator;
-import com.fixmia.rag.util.JwtUtil;
-import com.fixmia.rag.util.ReturnMessage;
+import com.fixmia.rag.util.*;
 import com.fixmia.rag.util.hibernate.AddRow;
 import com.fixmia.rag.util.hibernate.LoadData;
 import com.fixmia.rag.util.hibernate.RowChecker;
@@ -100,6 +97,26 @@ public class AuthController {
         objectNode.put("message", "Couldn't process the request");
         arrayNode.add(objectNode);
         return Response.status(Response.Status.NOT_ACCEPTABLE).entity(arrayNode).build();
+
+    }
+
+    @Path("/validate-token")
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response validateToken(@FormParam("access-token") String accessToken,@FormParam("refresh-token") String refreshToken ){
+        JSONResponseBuilder builder = new JSONResponseBuilder();
+        JSONResponseBuilder bookBuilder = builder.createBuilder();
+        bookBuilder.addItems("name","Harry Potter");
+        bookBuilder.addItems("author","JK Rowlin");
+
+
+        builder.addItems("name","ragbag");
+        builder.addItems("age","23");
+        builder.addItems("book",bookBuilder.getObjectNode());
+        ArrayNode arrayNode = builder.getJSON();
+
+        return Response.ok().entity(arrayNode).build();
+
 
     }
 
