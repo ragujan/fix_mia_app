@@ -71,7 +71,7 @@ public class AuthController {
                     objectNode.put("expires_in", expiresIn);
                     objectNode.put("token_type", "bearer");
                     objectNode.put("user", userDetails);
-                    UserType userType = (UserType) LoadData.loadSingleData("UserType", "id", 1);
+                    UserType userType = LoadData.loadSingleData("UserType", "id", 1);
                     String userTypeCode = userType.getCode();
 
                     objectNode.put("user-type", userTypeCode);
@@ -103,19 +103,35 @@ public class AuthController {
     @Path("/validate-token")
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    public Response validateToken(@FormParam("access-token") String accessToken,@FormParam("refresh-token") String refreshToken ){
+    public Response validateToken(@FormParam("access-token") String accessToken, @FormParam("refresh-token") String refreshToken) {
         JSONResponseBuilder builder = new JSONResponseBuilder();
-        JSONResponseBuilder bookBuilder = builder.createBuilder();
-        bookBuilder.addItems("name","Harry Potter");
-        bookBuilder.addItems("author","JK Rowlin");
+        boolean isAccessTokenValid = jwtUtil.maybeToken(accessToken) != null;
+        boolean isRefreshTokenValid = jwtUtil.maybeToken(refreshToken) != null;
 
+        if (isAccessTokenValid && isRefreshTokenValid) {
+            builder.addItems("status", "success");
+            builder.addItems("message", "tokens are valid");
+            builder.addItems("access-token", accessToken);
+            builder.addItems("refresh-token", refreshToken);
+            ArrayNode arrayNode = builder.getJSON();
+            return Response.ok().entity(arrayNode).build();
 
-        builder.addItems("name","ragbag");
-        builder.addItems("age","23");
-        builder.addItems("book",bookBuilder.getObjectNode());
-        ArrayNode arrayNode = builder.getJSON();
+        } else if (!isAccessTokenValid && isRefreshTokenValid) {
+            builder.addItems("status", "fail");
+            builder.addItems("message", "expired access token");
+            builder.addItems("access-token", accessToken);
+            builder.addItems("refresh-token", refreshToken);
+            ArrayNode arrayNode = builder.getJSON();
+            return Response.ok().entity(arrayNode).build();
+        } else {
+            builder.addItems("status", "fail");
+            builder.addItems("message", "not valid tokens");
+            builder.addItems("access-token", accessToken);
+            builder.addItems("refresh-token", refreshToken);
 
-        return Response.ok().entity(arrayNode).build();
+            ArrayNode arrayNode = builder.getJSON();
+            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(arrayNode).build();
+        }
 
 
     }
@@ -123,7 +139,8 @@ public class AuthController {
     @Path("/refresh-token")
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    public Response refreshTokenTest(@FormParam("token") String refreshToken) {
+    public Response refreshTokenTest(@FormParam("refresh-token") String refreshToken) {
+        System.out.println("came here to refresh token controller");
         ObjectMapper mapper = new ObjectMapper();
         ArrayNode arrayNode = mapper.createArrayNode();
         ObjectNode objectNode = mapper.createObjectNode();
@@ -145,7 +162,7 @@ public class AuthController {
                 ObjectNode userDetails = mapper.createObjectNode();
                 userDetails.put("email", email);
                 objectNode.put("status", "success");
-                objectNode.put("message", "login success");
+                objectNode.put("message", "token creation success");
                 objectNode.put("access_token", newAccessToken);
                 objectNode.put("refresh_token", refreshToken);
                 objectNode.put("expires_in", expiresIn);
@@ -166,9 +183,11 @@ public class AuthController {
 
             }
         } else {
+            System.out.println("refresh token is expired ");
             objectNode.put("status", "Error");
             objectNode.put("message", "Invalid Refresh Token");
             arrayNode.add(objectNode);
+            System.out.println(arrayNode);
             return Response.status(Response.Status.NOT_ACCEPTABLE).entity(arrayNode).build();
         }
 

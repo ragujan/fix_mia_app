@@ -9,6 +9,7 @@ import com.fixmia.rag.entities.UserType;
 import com.fixmia.rag.util.JwtUtil;
 import com.fixmia.rag.util.ReturnMessage;
 import com.fixmia.rag.util.hibernate.AddRow;
+import com.fixmia.rag.util.hibernate.LoadData;
 import com.fixmia.rag.util.hibernate.RowChecker;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
@@ -53,8 +54,6 @@ public class GoogleAuthController {
             boolean isUserExists = RowChecker.rowExists("User","email",email);
             if(isUserExists){
 
-
-
                 UserDTO userDTO = new UserDTO();
                 userDTO.setEmail(email);
                 String token = jwtUtil.generateAccessTokenForUser(userDTO);
@@ -62,6 +61,7 @@ public class GoogleAuthController {
                 Long expiresIn = jwtUtil.getExpirationTimeInSeconds(token);
 
                 ObjectNode userDetails = mapper.createObjectNode();
+
                 userDetails.put("email", email);
                 objectNode.put("status", "success");
                 objectNode.put("message", "login success");
@@ -69,9 +69,12 @@ public class GoogleAuthController {
                 objectNode.put("refresh_token", rfToken);
                 objectNode.put("expires_in", expiresIn);
                 objectNode.put("token_type", "bearer");
-
-
                 objectNode.put("user", userDetails);
+                UserType userType =  LoadData.loadSingleData("UserType", "id", 1);
+                String userTypeCode = userType.getCode();
+
+                objectNode.put("user-type", userTypeCode);
+
                 arrayNode.add(objectNode);
 
                 return Response.ok().entity(arrayNode).build();
