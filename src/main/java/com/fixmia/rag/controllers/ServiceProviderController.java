@@ -1,25 +1,30 @@
 package com.fixmia.rag.controllers;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fixmia.rag.entities.User;
 import com.fixmia.rag.entities.service_provider.ServiceProvider;
 import com.fixmia.rag.entities.service_provider.ServiceProviderCategory;
+import com.fixmia.rag.entities.service_provider.ServiceProviderDescription;
 import com.fixmia.rag.entities.service_provider.ServiceProviderPFP;
 import com.fixmia.rag.services.ServiceProviderService;
 import com.fixmia.rag.util.InputValidator;
+import com.fixmia.rag.util.JSONResponseBuilder;
 import com.fixmia.rag.util.JwtUtil;
 import com.fixmia.rag.util.hibernate.AddRow;
 import com.fixmia.rag.util.hibernate.LoadData;
 import com.fixmia.rag.util.hibernate.RowChecker;
+import com.sun.net.httpserver.HttpContext;
 import io.fusionauth.jwt.domain.JWT;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.FormParam;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.*;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import java.io.*;
+import java.util.List;
 
 @Path("/service-provider")
 public class ServiceProviderController {
@@ -27,12 +32,87 @@ public class ServiceProviderController {
     @Inject
     private JwtUtil jwtUtil;
 
+    @Context
+    private ServletContext servletContext;
+
+    @Context
+    private UriInfo uriInfo;
+
+    private String getPFPUrl(String imageName){
+        String contextPath = servletContext.getAttribute("BASE_URL").toString() ;
+        String domain = uriInfo.getBaseUri().getHost();
+        String scheme = uriInfo.getBaseUri().getScheme();
+        String port = Integer.toString(uriInfo.getBaseUri().getPort());
+        String pfpFilePath = "service_provider_pfp_images";
+        String origin = scheme+"://"+domain+":"+port+"/"+contextPath;
+        String pfpPath = origin+pfpFilePath;
+        String imagePath = pfpPath+"/"+imageName;
+        System.out.println("image path "+imagePath);
+        return imagePath;
+    }
     @GET
     @Path("/test")
     public String doGet() {
+        String contextPath = servletContext.getAttribute("BASE_URL").toString() ;
+        String domain = uriInfo.getBaseUri().getHost();
+        String scheme = uriInfo.getBaseUri().getScheme();
+        String port = Integer.toString(uriInfo.getBaseUri().getPort());
+        String pfpFilePath = "service_provider_pfp_images";
+        String origin = scheme+"://"+domain+":"+port+"/"+contextPath;
+        String pfpPath = origin+pfpFilePath;
+        String image = "/OobUBL6REhyGZGb5lFYYbig_smoke.jpg";
+        String imagePath = pfpPath+"/"+image;
+        System.out.println("image path "+imagePath);
         return "Ok do get test";
     }
+    @Path("/view-all-service-providers")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllServiceProviders(){
+        JSONResponseBuilder builder = new JSONResponseBuilder();
+        List<Object[]> serviceProviderList = LoadData.loadAll("ServiceProvider");
+        for (Object[] serviceProviders :serviceProviderList
+        ) {
+            ServiceProvider serviceProvider = (ServiceProvider) serviceProviders[0];
+            System.out.println(serviceProvider.getId());
+            ServiceProviderPFP serviceProviderPFP = LoadData.
+                    loadSingleData("ServiceProviderPFP","serviceProvider",serviceProvider);
 
+            String pfpURL = getPFPUrl(serviceProviderPFP.getPfpUrl());
+//
+            ServiceProviderDescription serviceProviderDescription = LoadData.
+                    loadSingleData("ServiceProviderDescription","serviceProvider",serviceProvider);
+            String description = serviceProviderDescription.getDescription();
+
+            String fname = serviceProvider.getFirstName();
+            String lname = serviceProvider.getLastName();
+            String price = Double.toString(serviceProvider.getPrice());
+            String email = serviceProvider.getUser().getEmail();
+            System.out.println("email is "+email);
+            System.out.println("pfp url is "+pfpURL);
+
+
+//            builder.addItems(Long.toString(category.getId()), category.getCategoryName());
+        }
+        ArrayNode arrayNode = builder.getJSON();
+        return Response.ok().entity(arrayNode).build();
+    }
+
+    @Path("/get-service-categories")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getCategories() {
+        JSONResponseBuilder builder = new JSONResponseBuilder();
+        List<Object[]> categoriesList = LoadData.loadAll("ServiceProviderCategory");
+
+        for (Object[] categories : categoriesList
+        ) {
+            ServiceProviderCategory category = (ServiceProviderCategory) categories[0];
+            builder.addItems(Long.toString(category.getId()), category.getCategoryName());
+        }
+        ArrayNode arrayNode = builder.getJSON();
+        return Response.ok().entity(arrayNode).build();
+    }
 
     @POST
     @Path("/register")
@@ -42,6 +122,7 @@ public class ServiceProviderController {
                                           @FormParam("description") String description,
                                           @FormParam("price") String price,
                                           @FormParam("serviceCategoryId") String serviceCategoryId,
+
                                           @FormDataParam("image") InputStream uploadedInputStream,
                                           @FormDataParam("image") FormDataContentDisposition fileDetail
     ) {
@@ -103,13 +184,18 @@ public class ServiceProviderController {
                 serviceProviderPFP.setServiceProvider(serviceProvider);
                 serviceProviderPFP.setPfpUrl(generatedPFPPath);
 
+                ServiceProviderDescription serviceProviderDescription = new ServiceProviderDescription();
+                serviceProviderDescription.setServiceProvider(serviceProvider);
+                serviceProviderDescription.setDescription(description);
+
                 boolean serviceProviderRegisterStatus = AddRow.addRow(serviceProvider);
+                AddRow.addRow(serviceProviderDescription);
                 if (serviceProviderRegisterStatus) {
                     AddRow.addRow(serviceProviderPFP);
                     try {
 
-                        String uploadDirectory = System.getProperty("user.dir")+"service_provider_pfp/";
-                        uploadDirectory = "C:\\Users\\ACER\\OneDrive\\Documents\\fixmia_viva_webapp\\fix_mia_app\\service_provider_pfp\\";
+                        String uploadDirectory = System.getProperty("user.dir") + "service_provider_pfp/";
+                        uploadDirectory = "C:\\Users\\ACER\\OneDrive\\Documents\\fixmia_viva_webapp\\fix_mia_app\\src\\main\\webapp\\service_provider_pfp_images\\";
                         OutputStream outputStream = new FileOutputStream(new File(uploadDirectory + generatedPFPPath));
 
                         int read;

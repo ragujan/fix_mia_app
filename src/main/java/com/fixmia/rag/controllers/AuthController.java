@@ -35,38 +35,6 @@ public class AuthController {
     @Inject
     private JwtUtil jwtUtil;
 
-
-    @POST
-    @Path("/register")
-    public String registerServiceProvider(@FormParam("token") String tokenString,
-                                          @FormParam("firstName") String firstName,
-                                          @FormParam("lastName") String lastName,
-                                          @FormParam("description") String description,
-                                          @FormParam("price") String price,
-                                          @FormParam("serviceCategoryId") String serviceCategoryId,
-                                          @FormDataParam("image") InputStream uploadedInputStream,
-                                          @FormDataParam("image") FormDataContentDisposition fileDetail
-    ) {
-        JWT token = jwtUtil.maybeToken(tokenString);
-        if (token != null) {
-            System.out.println("token is " + token);
-            System.out.println("first name is " + firstName);
-            System.out.println("last name is " + lastName);
-            System.out.println("description is " + description);
-            System.out.println("price " + price);
-            System.out.println("service provider id " + serviceCategoryId);
-            System.out.println(fileDetail.getFileName());
-
-            String email = jwtUtil.getUserEmailFromToken(tokenString);
-
-            return "ok";
-        } else {
-
-
-            return "not ok";
-        }
-    }
-
     @Path("/loginuser")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
