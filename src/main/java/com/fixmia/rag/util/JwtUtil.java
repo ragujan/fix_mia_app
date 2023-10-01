@@ -22,7 +22,7 @@ public class JwtUtil {
     private static final String CLAIM_KEY_USERNAME = "sub";
     private static final String CLAIM_KEY_CREATED = "created";
     private static final String ISSUER = "fix_mia";
-    private static final Long EXPIRATION_TIME = 90L;
+    private static final Long EXPIRATION_TIME = 3600L;
     private static final Long REFRESH_TOKEN_LIFE = 86400L;
     private static final String TYPE = "user-type";
     private static String SECRET = "";

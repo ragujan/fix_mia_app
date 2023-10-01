@@ -1,6 +1,10 @@
 package com.fixmia.rag.entities;
 
+import com.fixmia.rag.entities.service_provider.ServiceProvider;
 import jakarta.persistence.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "user")
@@ -16,6 +20,13 @@ public class User extends BaseEntity {
     @JoinColumn(name = "user_type_id")
     private UserType userType;
 
+    private String password;
+
+    private String salt;
+
+    @OneToMany(mappedBy = "user")
+    private Set<ServiceProvider> serviceProviders = new HashSet<>();
+
     public UserType getUserType() {
         return userType;
     }
@@ -28,9 +39,13 @@ public class User extends BaseEntity {
         this.id = id;
     }
 
-    private String password;
+    public Set<ServiceProvider> getServiceProviders() {
+        return serviceProviders;
+    }
 
-    private String salt;
+    public void setServiceProviders(Set<ServiceProvider> serviceProviders) {
+        this.serviceProviders = serviceProviders;
+    }
 
     public String getSalt() {
         return salt;

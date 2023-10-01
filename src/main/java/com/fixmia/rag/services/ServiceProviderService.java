@@ -2,7 +2,7 @@ package com.fixmia.rag.services;
 
 import com.fixmia.rag.util.hibernate.RowChecker;
 
-public class ServiceProviderPFPService {
+public class ServiceProviderService {
 
     private static String generateRandStr(){
         String AlphaNumericStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -14,6 +14,16 @@ public class ServiceProviderPFPService {
 
         }
         return builder.toString();
+    }
+    public static String generateServiceProviderRandomId(){
+        String genreatedId = generateRandStr();
+        while(isGeneratedIdInServiceProvider(genreatedId)){
+            genreatedId = generateRandStr();
+        }
+        return genreatedId;
+    }
+    public static boolean isGeneratedIdInServiceProvider(String generatedId){
+        return RowChecker.rowExists("ServiceProvider","generatedId",generatedId);
     }
     public static boolean isPFPPathExists(String pfpurl){
         return RowChecker.rowExists("ServiceProviderPFP","pfpUrl",pfpurl);

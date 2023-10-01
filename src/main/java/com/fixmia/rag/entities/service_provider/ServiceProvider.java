@@ -1,5 +1,6 @@
 package com.fixmia.rag.entities.service_provider;
 
+import com.fixmia.rag.entities.User;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
@@ -35,6 +36,10 @@ public class ServiceProvider {
 
     @OneToMany(mappedBy = "serviceProvider")
     private Set<ServiceProviderPFP> serviceProviderPFPS = new HashSet<>();
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public Long getId() {
         return id;
@@ -114,6 +119,14 @@ public class ServiceProvider {
 
     public void setServiceProviderPFPS(Set<ServiceProviderPFP> serviceProviderPFPS) {
         this.serviceProviderPFPS = serviceProviderPFPS;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }
 
