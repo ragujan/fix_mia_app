@@ -15,5 +15,11 @@
     <mapping class="com.fixmia.rag.entities.BaseEntity"/>
     <mapping class="com.fixmia.rag.entities.JTI"/>
     <mapping class="com.fixmia.rag.entities.UserType"/>
+<!--    service provider entities-->
+
+    <mapping class="com.fixmia.rag.entities.service_provider.ServiceProvider"/>
+    <mapping class="com.fixmia.rag.entities.service_provider.ServiceProviderCategory"/>
+    <mapping class="com.fixmia.rag.entities.service_provider.ServiceProviderDescription"/>
+    <mapping class="com.fixmia.rag.entities.service_provider.ServiceProviderPFP"/>
   </session-factory>
 </hibernate-configuration>

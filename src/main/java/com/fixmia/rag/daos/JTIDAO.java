@@ -29,4 +29,5 @@ public class JTIDAO {
         DeleteRow.delete(jti);
     }
 
+
 }

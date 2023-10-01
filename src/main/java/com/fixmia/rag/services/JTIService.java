@@ -2,11 +2,13 @@ package com.fixmia.rag.services;
 
 import com.fixmia.rag.entities.JTI;
 import com.fixmia.rag.util.hibernate.AddRow;
+import com.fixmia.rag.util.hibernate.DeleteRow;
+import com.fixmia.rag.util.hibernate.LoadData;
 import com.fixmia.rag.util.hibernate.RowChecker;
 
 public class JTIService {
     public static boolean isJTIExists(String jti){
-        return RowChecker.rowExists("JTI","JTI",jti);
+        return RowChecker.rowExists("JTI","JTIClaim",jti);
     }
     public static String generateJTI(){
         String genreatedJTI = generateRandStr();
@@ -18,7 +20,7 @@ public class JTIService {
     }
     public static void insertJTI(String generatedJTI){
         JTI jti = new JTI();
-        jti.setJTI(generatedJTI);
+        jti.setJTIClaim(generatedJTI);
         AddRow.addRow(jti);
     }
     private static String generateRandStr(){
@@ -31,5 +33,9 @@ public class JTIService {
 
         }
         return builder.toString();
+    }
+    public static void deleteJTIByClaim(String jtiClaim){
+        JTI jti = LoadData.loadSingleData("JTI","JTIClaim",jtiClaim);
+        DeleteRow.delete(jti);
     }
 }

@@ -22,8 +22,8 @@ public class JwtUtil {
     private static final String CLAIM_KEY_USERNAME = "sub";
     private static final String CLAIM_KEY_CREATED = "created";
     private static final String ISSUER = "fix_mia";
-    private static final Long EXPIRATION_TIME = 30L;
-    private static final Long REFRESH_TOKEN_LIFE = 60L;
+    private static final Long EXPIRATION_TIME = 90L;
+    private static final Long REFRESH_TOKEN_LIFE = 86400L;
     private static final String TYPE = "user-type";
     private static String SECRET = "";
 
@@ -95,6 +95,14 @@ public class JwtUtil {
         Date expiryDate = getExpiredDateFromToken(token);
         Date currentDate = new Date();
         return (expiryDate.getTime() - currentDate.getTime()) / 1000;
+    }
+
+    public String getJTIFromToken(String token) {
+        Verifier verifier = HMACVerifier.newVerifier(SECRET);
+        JWT jwt = JWT.getDecoder().decode(token, verifier);
+        Map<String, Object> jwtAllClaims = jwt.getAllClaims();
+        return String.valueOf(jwtAllClaims.get("jti"));
+
     }
 
     public boolean isTokenExpired(String token) {

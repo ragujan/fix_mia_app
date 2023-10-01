@@ -10,7 +10,14 @@ public class JTI {
     private Long id;
 
     @Column(name = "jti")
-    private String JTI;
+    private String JTIClaim;
+
+    public JTI() {
+    }
+
+    public JTI(String JTIClaim) {
+        this.JTIClaim = JTIClaim;
+    }
 
     public Long getId() {
         return id;
@@ -20,11 +27,11 @@ public class JTI {
         this.id = id;
     }
 
-    public String getJTI() {
-        return JTI;
+    public String getJTIClaim() {
+        return JTIClaim;
     }
 
-    public void setJTI(String JTI) {
-        this.JTI = JTI;
+    public void setJTIClaim(String JTIClaim) {
+        this.JTIClaim = JTIClaim;
     }
 }

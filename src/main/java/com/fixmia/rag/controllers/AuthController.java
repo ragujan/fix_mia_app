@@ -5,10 +5,13 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fixmia.rag.annotations.IsUser;
 import com.fixmia.rag.dtos.UserDTO;
+import com.fixmia.rag.entities.JTI;
 import com.fixmia.rag.entities.User;
 import com.fixmia.rag.entities.UserType;
+import com.fixmia.rag.services.JTIService;
 import com.fixmia.rag.util.*;
 import com.fixmia.rag.util.hibernate.AddRow;
+import com.fixmia.rag.util.hibernate.DeleteRow;
 import com.fixmia.rag.util.hibernate.LoadData;
 import com.fixmia.rag.util.hibernate.RowChecker;
 import io.fusionauth.jwt.domain.JWT;
@@ -17,16 +20,52 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.glassfish.jersey.server.mvc.Viewable;
 
+import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 @IsUser
 @Path("/")
 public class AuthController {
+
     @Inject
     private JwtUtil jwtUtil;
+
+
+    @POST
+    @Path("/register")
+    public String registerServiceProvider(@FormParam("token") String tokenString,
+                                          @FormParam("firstName") String firstName,
+                                          @FormParam("lastName") String lastName,
+                                          @FormParam("description") String description,
+                                          @FormParam("price") String price,
+                                          @FormParam("serviceCategoryId") String serviceCategoryId,
+                                          @FormDataParam("image") InputStream uploadedInputStream,
+                                          @FormDataParam("image") FormDataContentDisposition fileDetail
+    ) {
+        JWT token = jwtUtil.maybeToken(tokenString);
+        if (token != null) {
+            System.out.println("token is " + token);
+            System.out.println("first name is " + firstName);
+            System.out.println("last name is " + lastName);
+            System.out.println("description is " + description);
+            System.out.println("price " + price);
+            System.out.println("service provider id " + serviceCategoryId);
+            System.out.println(fileDetail.getFileName());
+
+            String email = jwtUtil.getUserEmailFromToken(tokenString);
+
+            return "ok";
+        } else {
+
+
+            return "not ok";
+        }
+    }
 
     @Path("/loginuser")
     @POST
@@ -36,7 +75,6 @@ public class AuthController {
         ObjectMapper mapper = new ObjectMapper();
         ArrayNode arrayNode = mapper.createArrayNode();
         ObjectNode objectNode = mapper.createObjectNode();
-        System.out.println("came here ");
         String email = dto.getEmail();
         char[] password = dto.getPassword();
         if (!InputValidator.inputEmailIsValid(email)) {
@@ -100,15 +138,42 @@ public class AuthController {
 
     }
 
-    @Path("/validate-token")
+    @Path("/validatetoken")
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    public Response validateToken(@FormParam("access-token") String accessToken, @FormParam("refresh-token") String refreshToken) {
+    public Response validateToken(@FormParam("access_token") String accessToken, @FormParam("refresh_token") String refreshToken) {
+        System.out.println("token are received");
+        System.out.println("access token " + accessToken);
         JSONResponseBuilder builder = new JSONResponseBuilder();
         boolean isAccessTokenValid = jwtUtil.maybeToken(accessToken) != null;
         boolean isRefreshTokenValid = jwtUtil.maybeToken(refreshToken) != null;
 
         if (isAccessTokenValid && isRefreshTokenValid) {
+
+            String accessJTIClaim = jwtUtil.getJTIFromToken(accessToken);
+            String refreshJTIClaim = jwtUtil.getJTIFromToken(refreshToken);
+            System.out.println("jti acces is " + accessJTIClaim);
+            System.out.println("jti refresh is " + refreshJTIClaim);
+            JTI accessJTI = new JTI(accessJTIClaim);
+            JTI refreshJTI = new JTI(refreshJTIClaim);
+            if (!JTIService.isJTIExists(accessJTIClaim)) {
+                builder.addItems("status", "fail");
+                builder.addItems("message", "not valid tokens");
+                builder.addItems("access-token", accessToken);
+                builder.addItems("refresh-token", refreshToken);
+
+                ArrayNode arrayNode = builder.getJSON();
+                return Response.status(Response.Status.NOT_ACCEPTABLE).entity(arrayNode).build();
+            }
+            if (!JTIService.isJTIExists(refreshJTIClaim)) {
+                builder.addItems("status", "fail");
+                builder.addItems("message", "not valid tokens");
+                builder.addItems("access-token", accessToken);
+                builder.addItems("refresh-token", refreshToken);
+
+                ArrayNode arrayNode = builder.getJSON();
+                return Response.status(Response.Status.NOT_ACCEPTABLE).entity(arrayNode).build();
+            }
             builder.addItems("status", "success");
             builder.addItems("message", "tokens are valid");
             builder.addItems("access-token", accessToken);
@@ -140,7 +205,6 @@ public class AuthController {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     public Response refreshTokenTest(@FormParam("refresh-token") String refreshToken) {
-        System.out.println("came here to refresh token controller");
         ObjectMapper mapper = new ObjectMapper();
         ArrayNode arrayNode = mapper.createArrayNode();
         ObjectNode objectNode = mapper.createObjectNode();
@@ -191,6 +255,51 @@ public class AuthController {
             return Response.status(Response.Status.NOT_ACCEPTABLE).entity(arrayNode).build();
         }
 
+    }
+
+    @POST
+    @Path("/logout")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response logout(@FormParam("access-token") String accessToken, @FormParam("refresh-token") String refreshToken) {
+        boolean isAccessTokenValid = jwtUtil.maybeToken(accessToken) != null;
+        boolean isRefreshTokenValid = jwtUtil.maybeToken(refreshToken) != null;
+        JSONResponseBuilder builder = new JSONResponseBuilder();
+        if (!isAccessTokenValid || !isRefreshTokenValid) {
+            builder.addItems("status", "fail");
+            builder.addItems("message", "not valid tokens");
+            builder.addItems("access-token", accessToken);
+            builder.addItems("refresh-token", refreshToken);
+
+            ArrayNode arrayNode = builder.getJSON();
+            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(arrayNode).build();
+        } else {
+            String accessJTIClaim = jwtUtil.getJTIFromToken(accessToken);
+            String refreshJTIClaim = jwtUtil.getJTIFromToken(refreshToken);
+            if (!JTIService.isJTIExists(accessJTIClaim)) {
+                builder.addItems("status", "fail");
+                builder.addItems("message", "not valid tokens");
+                builder.addItems("access-token", accessToken);
+                builder.addItems("refresh-token", refreshToken);
+
+                ArrayNode arrayNode = builder.getJSON();
+                return Response.status(Response.Status.NOT_ACCEPTABLE).entity(arrayNode).build();
+            }
+            if (!JTIService.isJTIExists(refreshJTIClaim)) {
+                builder.addItems("status", "fail");
+                builder.addItems("message", "not valid tokens");
+                builder.addItems("access-token", accessToken);
+                builder.addItems("refresh-token", refreshToken);
+
+                ArrayNode arrayNode = builder.getJSON();
+                return Response.status(Response.Status.NOT_ACCEPTABLE).entity(arrayNode).build();
+            }
+            JTIService.deleteJTIByClaim(accessJTIClaim);
+            JTIService.deleteJTIByClaim(refreshJTIClaim);
+            builder.addItems("status", "success");
+            builder.addItems("message", "logged out successfully");
+            ArrayNode arrayNode = builder.getJSON();
+            return Response.ok().entity(arrayNode).build();
+        }
     }
 
     @POST
