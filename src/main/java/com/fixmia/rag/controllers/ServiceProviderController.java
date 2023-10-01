@@ -15,6 +15,7 @@ import com.fixmia.rag.util.hibernate.LoadData;
 import com.fixmia.rag.util.hibernate.RowChecker;
 import com.sun.net.httpserver.HttpContext;
 import io.fusionauth.jwt.domain.JWT;
+import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.inject.Inject;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
@@ -194,8 +195,7 @@ public class ServiceProviderController {
                     AddRow.addRow(serviceProviderPFP);
                     try {
 
-                        String uploadDirectory = System.getProperty("user.dir") + "service_provider_pfp/";
-                        uploadDirectory = "C:\\Users\\ACER\\OneDrive\\Documents\\fixmia_viva_webapp\\fix_mia_app\\src\\main\\webapp\\service_provider_pfp_images\\";
+                        String uploadDirectory = Dotenv.load().get("SERVICE_PROVIDER_PFP_DIRECTORY");
                         OutputStream outputStream = new FileOutputStream(new File(uploadDirectory + generatedPFPPath));
 
                         int read;
