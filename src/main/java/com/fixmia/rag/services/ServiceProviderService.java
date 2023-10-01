@@ -30,7 +30,7 @@ public class ServiceProviderService {
     }
     public static String generatePFPPath(String pfpName){
         String genreatedJTI = generateRandStr();
-        String pfpUrl = pfpName+genreatedJTI;
+        String pfpUrl = genreatedJTI+pfpName;
         while(isPFPPathExists(pfpUrl)){
             genreatedJTI = generateRandStr();
             pfpUrl = pfpName+genreatedJTI;

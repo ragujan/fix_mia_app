@@ -19,7 +19,7 @@ import jakarta.ws.rs.Path;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
-import java.io.InputStream;
+import java.io.*;
 
 @Path("/service-provider")
 public class ServiceProviderController {
@@ -106,12 +106,28 @@ public class ServiceProviderController {
                 boolean serviceProviderRegisterStatus = AddRow.addRow(serviceProvider);
                 if (serviceProviderRegisterStatus) {
                     AddRow.addRow(serviceProviderPFP);
-                    return "success";
-                }else{
+                    try {
+
+                        String uploadDirectory = System.getProperty("user.dir")+"service_provider_pfp/";
+                        uploadDirectory = "C:\\Users\\ACER\\OneDrive\\Documents\\fixmia_viva_webapp\\fix_mia_app\\service_provider_pfp\\";
+                        OutputStream outputStream = new FileOutputStream(new File(uploadDirectory + generatedPFPPath));
+
+                        int read;
+                        byte[] bytes = new byte[1024];
+
+                        while ((read = uploadedInputStream.read(bytes)) != -1) {
+                            outputStream.write(bytes, 0, read);
+                        }
+                        outputStream.flush();
+                        outputStream.close();
+                        return "success";
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                        return "image upload failed";
+                    }
+                } else {
                     return "failed";
                 }
-
-
             } else {
                 return "user is not found";
             }
