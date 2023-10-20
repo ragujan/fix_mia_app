@@ -31,10 +31,12 @@ public class ServiceProvider {
     @JoinColumn(name = "service_provider_category_id")
     ServiceProviderCategory serviceProviderCategory;
 
-    @OneToMany(mappedBy ="serviceProvider" )
+    @OneToMany(fetch = FetchType.LAZY,mappedBy ="serviceProvider",cascade = CascadeType.REMOVE)
+//    @OneToMany(mappedBy ="serviceProvider")
     private Set<ServiceProviderDescription> serviceProviderDescriptions = new HashSet<>();
 
-    @OneToMany(mappedBy = "serviceProvider")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "serviceProvider",cascade = CascadeType.REMOVE)
+//    @OneToMany( mappedBy = "serviceProvider")
     private Set<ServiceProviderPFP> serviceProviderPFPS = new HashSet<>();
 
     @ManyToOne

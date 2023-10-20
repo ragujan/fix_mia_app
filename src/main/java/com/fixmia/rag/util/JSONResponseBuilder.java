@@ -59,7 +59,6 @@ public class JSONResponseBuilder {
     }
 
 //    public static void main(String[] args) {
-////        ObjectNode book = mapper.createObjectNode();
 //
 //        JSONResponseBuilder response = new JSONResponseBuilder();
 //        JSONResponseBuilder response2 = new JSONResponseBuilder();

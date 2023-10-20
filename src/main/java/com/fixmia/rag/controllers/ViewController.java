@@ -21,4 +21,11 @@ public class ViewController {
     public Viewable homeView(){
         return new Viewable("/homepage");
     }
+
+    @GET
+    @Path("/addcategory")
+    public Viewable addServiceCategoryView(){
+        return new Viewable("/addcategory");
+    }
+
 }

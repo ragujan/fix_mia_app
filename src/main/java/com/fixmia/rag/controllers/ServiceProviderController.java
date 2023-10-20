@@ -7,12 +7,12 @@ import com.fixmia.rag.entities.service_provider.ServiceProviderCategory;
 import com.fixmia.rag.entities.service_provider.ServiceProviderDescription;
 import com.fixmia.rag.entities.service_provider.ServiceProviderPFP;
 import com.fixmia.rag.services.ServiceProviderService;
+import com.fixmia.rag.util.AWS;
 import com.fixmia.rag.util.InputValidator;
 import com.fixmia.rag.util.JSONResponseBuilder;
 import com.fixmia.rag.util.JwtUtil;
-import com.fixmia.rag.util.hibernate.AddRow;
-import com.fixmia.rag.util.hibernate.LoadData;
-import com.fixmia.rag.util.hibernate.RowChecker;
+import com.fixmia.rag.util.hibernate.*;
+import com.mysql.cj.result.Row;
 import com.sun.net.httpserver.HttpContext;
 import io.fusionauth.jwt.domain.JWT;
 import io.github.cdimascio.dotenv.Dotenv;
@@ -21,11 +21,13 @@ import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.*;
+import org.apache.commons.io.IOUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import java.io.*;
 import java.util.List;
+import java.util.Set;
 
 @Path("/service-provider")
 public class ServiceProviderController {
@@ -39,59 +41,89 @@ public class ServiceProviderController {
     @Context
     private UriInfo uriInfo;
 
-    private String getPFPUrl(String imageName){
-        String contextPath = servletContext.getAttribute("BASE_URL").toString() ;
+    private String getPFPUrl(String imageName) {
+        String contextPath = servletContext.getAttribute("BASE_URL").toString();
         String domain = uriInfo.getBaseUri().getHost();
         String scheme = uriInfo.getBaseUri().getScheme();
         String port = Integer.toString(uriInfo.getBaseUri().getPort());
         String pfpFilePath = "service_provider_pfp_images";
-        String origin = scheme+"://"+domain+":"+port+"/"+contextPath;
-        String pfpPath = origin+pfpFilePath;
-        String imagePath = pfpPath+"/"+imageName;
-        System.out.println("image path "+imagePath);
+        String origin = scheme + "://" + domain + ":" + port + contextPath;
+        String pfpPath = origin + pfpFilePath;
+        String imagePath = pfpPath + "/" + imageName;
+        System.out.println("image path " + imagePath);
         return imagePath;
     }
+
     @GET
     @Path("/test")
-    public String doGet() {
-        String contextPath = servletContext.getAttribute("BASE_URL").toString() ;
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response doGet1() {
+        JSONResponseBuilder builder = new JSONResponseBuilder();
+        builder.addItems("name", "bag");
+        builder.addItems("age", "22");
+
+        JSONResponseBuilder book = builder.createBuilder();
+        book.addItems("name", "HObbit12");
+        book.addItems("year", "2023");
+        builder.addItems("book", book.getObjectNode());
+        ArrayNode arrayNode = builder.getJSON();
+        return Response.ok().entity(arrayNode).build();
+    }
+
+    @GET
+    @Path("/test2")
+    public String doGet2() {
+        String contextPath = servletContext.getAttribute("BASE_URL").toString();
         String domain = uriInfo.getBaseUri().getHost();
         String scheme = uriInfo.getBaseUri().getScheme();
         String port = Integer.toString(uriInfo.getBaseUri().getPort());
         String pfpFilePath = "service_provider_pfp_images";
-        String origin = scheme+"://"+domain+":"+port+"/"+contextPath;
-        String pfpPath = origin+pfpFilePath;
+        String origin = scheme + ":/" + domain + ":" + port + "/" + contextPath;
+        String pfpPath = origin + pfpFilePath;
         String image = "/OobUBL6REhyGZGb5lFYYbig_smoke.jpg";
-        String imagePath = pfpPath+"/"+image;
-        System.out.println("image path "+imagePath);
+        String imagePath = pfpPath + "/" + image;
+        System.out.println("image path " + imagePath);
         return "Ok do get test";
     }
+
     @Path("/view-all-service-providers")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllServiceProviders(){
+    public Response getAllServiceProviders() {
         JSONResponseBuilder builder = new JSONResponseBuilder();
         List<Object[]> serviceProviderList = LoadData.loadAll("ServiceProvider");
-        for (Object[] serviceProviders :serviceProviderList
+        int i = 0;
+        for (Object[] serviceProviders : serviceProviderList
         ) {
             ServiceProvider serviceProvider = (ServiceProvider) serviceProviders[0];
             System.out.println(serviceProvider.getId());
             ServiceProviderPFP serviceProviderPFP = LoadData.
-                    loadSingleData("ServiceProviderPFP","serviceProvider",serviceProvider);
+                    loadSingleData("ServiceProviderPFP", "serviceProvider", serviceProvider);
 
             String pfpURL = getPFPUrl(serviceProviderPFP.getPfpUrl());
+//            pfpURL = Dotenv.load().get("SERVICE_PROVIDER_PFP_DIRECTORY")+serviceProviderPFP.getPfpUrl();
 //
             ServiceProviderDescription serviceProviderDescription = LoadData.
-                    loadSingleData("ServiceProviderDescription","serviceProvider",serviceProvider);
+                    loadSingleData("ServiceProviderDescription", "serviceProvider", serviceProvider);
             String description = serviceProviderDescription.getDescription();
 
             String fname = serviceProvider.getFirstName();
             String lname = serviceProvider.getLastName();
+            String generatedId = serviceProvider.getGeneratedId();
             String price = Double.toString(serviceProvider.getPrice());
             String email = serviceProvider.getUser().getEmail();
-            System.out.println("email is "+email);
-            System.out.println("pfp url is "+pfpURL);
-
+            System.out.println("email is " + email);
+            System.out.println("pfp url is " + pfpURL);
+            JSONResponseBuilder builder1 = new JSONResponseBuilder();
+            builder1.addItems("fname", fname);
+            builder1.addItems("lname", lname);
+            builder1.addItems("generated_id", generatedId);
+            builder1.addItems("price", price);
+            builder1.addItems("email", email);
+            builder1.addItems("pfp_url", pfpURL);
+            builder1.addItems("description", description);
+            builder.addItems(Integer.toString(i), builder1.getObjectNode());
+            i++;
 
 //            builder.addItems(Long.toString(category.getId()), category.getCategoryName());
         }
@@ -113,6 +145,84 @@ public class ServiceProviderController {
         }
         ArrayNode arrayNode = builder.getJSON();
         return Response.ok().entity(arrayNode).build();
+    }
+
+    @POST
+    @Path("/category-register")
+    public String addCategory(@FormParam("category_name") String categoryName) {
+        boolean isExists = RowChecker.rowExists("ServiceProviderCategory", "categoryName", categoryName);
+        if (!isExists) {
+            ServiceProviderCategory serviceProviderCategory = new ServiceProviderCategory();
+            serviceProviderCategory.setCategoryName(categoryName);
+            AddRow.addRow(serviceProviderCategory);
+            return "successfully added";
+        } else {
+            return "Error Failed to add";
+        }
+
+    }
+
+    @POST
+    @Path("/service-provider-update")
+    public String updateServiceProvider(@FormDataParam("email") String email, @FormParam("first_name") String firstName, @FormParam("last_name") String lastName, @FormParam("price") String price) {
+        boolean isExists = RowChecker.rowExists("User", "email", email);
+        if (isExists) {
+            User user = LoadData.loadSingleData("User", "email", email);
+            isExists = RowChecker.rowExists("ServiceProvider", "user", user);
+            if (isExists) {
+                ServiceProvider serviceProvider = LoadData.loadSingleData("ServiceProvider", "user", user);
+                System.out.println(serviceProvider.getLastName());
+                serviceProvider.setFirstName(firstName);
+                serviceProvider.setLastName(lastName);
+                serviceProvider.setPrice(Double.parseDouble(price));
+//                Set<ServiceProviderDescription> descriptions = serviceProvider.getServiceProviderDescriptions();
+
+                UpdateRow.update(serviceProvider);
+
+                return "ok SP exists";
+
+            }
+        }
+        return "ok";
+
+
+    }
+
+    @POST
+    @Path("/delete-service-provider")
+    public String deleteServiceProvider(@FormParam("email") String email) {
+        boolean isExists = RowChecker.rowExists("User", "email", email);
+        if (isExists) {
+            User user = LoadData.loadSingleData("User", "email", email);
+            isExists = RowChecker.rowExists("ServiceProvider", "user", user);
+            if (isExists) {
+                ServiceProvider serviceProvider = LoadData.loadSingleData("ServiceProvider", "user", user);
+                System.out.println(serviceProvider.getPrice());
+                Set<ServiceProviderPFP> pfps = serviceProvider.getServiceProviderPFPS();
+                Set<ServiceProviderDescription> descriptions = serviceProvider.getServiceProviderDescriptions();
+                System.out.println("size is  " + pfps.size());
+                System.out.println("de is  " + descriptions.size());
+
+                return "deleted successfully";
+            } else {
+                return "not found ";
+            }
+        } else {
+            return "Error Failed to delete";
+        }
+
+    }
+
+    @POST
+    @Path("/uploadImage")
+    public String uploadImage(
+            @FormDataParam("image") byte[] uploadedInputStream,
+            @FormDataParam("image") FormDataContentDisposition fileDetail
+    ) throws IOException {
+        System.out.println("size is "+uploadedInputStream.length);
+        AWS.printByteArray(uploadedInputStream);
+        AWS.uploadImage(fileDetail.getFileName(), uploadedInputStream);
+        return "Ok";
     }
 
     @POST
@@ -142,9 +252,6 @@ public class ServiceProviderController {
         } else if (!InputValidator.inputNumberIsValid(serviceCategoryId)) {
             inputsAreValid = false;
             return "Invalid service category id";
-        } else if (!InputValidator.inputTextIsValid(description)) {
-            inputsAreValid = false;
-            return "Invalid description";
         }
         if (token != null && inputsAreValid) {
             System.out.println("token is " + token);
@@ -163,7 +270,8 @@ public class ServiceProviderController {
                 User user = LoadData.loadSingleData("User", "email", email);
 //              get service provider category entity using category id
                 ServiceProviderCategory serviceProviderCategory = new ServiceProviderCategory();
-                serviceProviderCategory.setId(1L);
+                Long receivedId = Long.parseLong(serviceCategoryId);
+                serviceProviderCategory.setId(receivedId);
 
 //              generate a random id
                 String generatedId = ServiceProviderService.generateServiceProviderRandomId();
@@ -197,7 +305,6 @@ public class ServiceProviderController {
 
                         String uploadDirectory = Dotenv.load().get("SERVICE_PROVIDER_PFP_DIRECTORY");
                         OutputStream outputStream = new FileOutputStream(new File(uploadDirectory + generatedPFPPath));
-
                         int read;
                         byte[] bytes = new byte[1024];
 
@@ -223,4 +330,6 @@ public class ServiceProviderController {
             return "invalid token";
         }
     }
+
+
 }
