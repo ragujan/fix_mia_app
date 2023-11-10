@@ -213,17 +213,7 @@ public class ServiceProviderController {
 
     }
 
-    @POST
-    @Path("/uploadImage")
-    public String uploadImage(
-            @FormDataParam("image") byte[] uploadedInputStream,
-            @FormDataParam("image") FormDataContentDisposition fileDetail
-    ) throws IOException {
-        System.out.println("size is "+uploadedInputStream.length);
-        AWS.printByteArray(uploadedInputStream);
-        AWS.uploadImage(fileDetail.getFileName(), uploadedInputStream);
-        return "Ok";
-    }
+
 
     @POST
     @Path("/register")
